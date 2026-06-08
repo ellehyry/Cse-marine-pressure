@@ -21,6 +21,8 @@
       --accent:        #0B4A52;
       --accent-hover:  #083B41;
       --accent-soft:   #0B4A521A;
+      /* All "warn" tokens now point at the petrol accent — keeps the Setup
+         banner and the Quit button in the same blue family. */
       --warn:    #083B41;
       --warn-soft: #0B4A521A;
       --warn-bg:   #0B4A521A;
@@ -48,40 +50,59 @@
       padding: 32px 24px 64px;
     }
 
-    /* Header / logo */
-    header { margin-bottom: 20px; }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-logo { max-height: 64px; width: auto; display: block; }
+    /* Header / logo — centered, takes the top of the page comfortably. */
+    header {
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .brand {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-logo {
+      width: auto;
+      max-width: 240px;
+      max-height: 96px;
+      display: block;
+    }
+    @media (min-width: 640px) {
+      .brand-logo {
+        max-width: 280px;
+        max-height: 112px;
+      }
+    }
     .brand-text {
       font-family: var(--font-display); font-weight: 500;
-      font-size: 28px; letter-spacing: -0.02em; color: var(--ink); line-height: 1;
+      font-size: 32px; letter-spacing: -0.02em; color: var(--ink); line-height: 1;
     }
     .brand-text em { font-style: italic; font-weight: 400; color: var(--accent); }
     .brand-sub {
-      font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase;
-      color: var(--ink-mute); margin-top: 6px;
+      font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--ink-mute); margin-top: 4px;
     }
 
-    /* Red install banner */
+    /* Setup banner — all colors from design tokens (blue family). */
     .install-banner {
       background: var(--warn-bg);
-      border: 1px solid var(--warn);
+      border: 1px solid var(--accent);
       border-radius: var(--radius);
       padding: 14px 18px;
-      margin: 18px 0 22px;
+      margin: 0 0 22px;
       font-size: 14px; line-height: 1.55;
-      color: #5A1F0F;
+      color: var(--ink);
     }
     .install-banner h2 {
       margin: 0 0 8px;
       font-family: var(--font-body);
       font-size: 14px; font-weight: 600;
-      color: var(--warn);
+      color: var(--accent);
       text-transform: uppercase; letter-spacing: 0.05em;
     }
     .install-banner ol { margin: 0; padding-left: 22px; }
     .install-banner li + li { margin-top: 4px; }
-    .install-banner strong { color: #4a1a0c; }
+    .install-banner strong { color: var(--accent); font-weight: 600; }
 
     /* Sections */
     section {
@@ -201,12 +222,18 @@
     }
     @keyframes pulse { 0%,100% {opacity:1;} 50% {opacity:0.3;} }
 
-    /* Mode picker — horizontal 4-up grid */
+    /* Mode picker — horizontal grid. 2x2 on narrow phones so "Mode 1"
+       doesn't wrap to two lines; 4-up on wider viewports. */
     .mode-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 8px;
       margin-bottom: 14px;
+    }
+    @media (min-width: 480px) {
+      .mode-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
     }
     .mode-btn {
       padding: 14px 8px;
@@ -238,36 +265,18 @@
       margin-top: 14px;
     }
 
-    /* Activity log */
-    .log {
-      font-family: var(--font-mono);
-      font-size: 12px; line-height: 1.6;
-      color: var(--ink-soft);
-      background: var(--bg);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 12px 14px;
-      max-height: 200px; overflow-y: auto;
-      white-space: pre-wrap; word-break: break-all;
-      margin: 0;
-    }
-    .log:empty::before {
-      content: 'No activity yet.';
-      color: var(--ink-mute);
-      font-style: italic;
-    }
-
+    /* Unsupported-browser banner — also in the blue family */
     .unsupported {
-      background: #FFFBEA;
-      border: 1px solid #E8D8A0;
-      color: #5A4920;
+      background: var(--accent-soft);
+      border: 1px solid var(--accent);
+      color: var(--ink);
       padding: 14px 18px;
       border-radius: var(--radius);
       font-size: 14px;
       margin-bottom: 16px;
       line-height: 1.55;
     }
-    .unsupported strong { display: block; margin-bottom: 4px; color: #3D3110; }
+    .unsupported strong { display: block; margin-bottom: 4px; color: var(--accent); }
   </style>
 </head>
 <body>
@@ -280,16 +289,16 @@
              alt="CSE Marine"
              onerror="this.style.display='none'; document.getElementById('brandText').style.display='inline-block';">
         <span class="brand-text" id="brandText" style="display: none;">CSE <em>Marine</em></span>
+        <div class="brand-sub">Pressure Mode</div>
       </div>
-      <div class="brand-sub">Pressure Mode</div>
     </header>
 
-    <!-- Red install banner -->
+    <!-- Setup banner (blue) -->
     <div class="install-banner">
       <h2>Setup</h2>
       <ol>
         <li>Install the caps in the boat.</li>
-        <li><strong>This will start a 10 minute paiting window.</strong></li>
+        <li><strong>This will start a 10 minute pairing window.</strong></li>
         <li>Tap <strong>Find caps</strong>, pick your cap from the chooser, then program a mode.</li>
       </ol>
     </div>
@@ -351,11 +360,6 @@
       </div>
     </section>
 
-    <section>
-      <div class="section-label">Activity log</div>
-      <pre class="log" id="log"></pre>
-    </section>
-
   </main>
 
   <script>
@@ -398,19 +402,12 @@
     selectNone:     document.getElementById('selectNone'),
     selectedCount:  document.getElementById('selectedCount'),
     modeBtns:       document.querySelectorAll('.mode-btn'),
-    log:            document.getElementById('log'),
     unsupported:    document.getElementById('unsupportedBanner'),
   };
 
   if (!navigator.bluetooth) {
     el.unsupported.style.display = 'block';
     el.findBtn.disabled = true;
-  }
-
-  function log(line) {
-    const ts = new Date().toLocaleTimeString();
-    el.log.textContent += `[${ts}] ${line}\n`;
-    el.log.scrollTop = el.log.scrollHeight;
   }
 
   function encodeLevel(level) {
@@ -491,15 +488,12 @@
 
   async function findCap() {
     try {
-      log('Opening cap chooser…');
       const device = await navigator.bluetooth.requestDevice({
         filters: [{ namePrefix: 'CSE_Marine_' }],
         optionalServices: [NUS_SERVICE],
       });
-      if (caps.has(device.id)) {
-        log(`${device.name} is already in the list.`);
-        return;
-      }
+      if (caps.has(device.id)) return;
+
       const cap = {
         id: device.id, name: device.name || '(unnamed)',
         device, rxChar: null, txChar: null, pending: null,
@@ -508,7 +502,6 @@
       };
       caps.set(device.id, cap);
       renderCapList();
-      log(`Connecting to ${cap.name}…`);
       device.addEventListener('gattserverdisconnected', () => onCapDisconnected(cap));
       const server = await device.gatt.connect();
       const service = await server.getPrimaryService(NUS_SERVICE);
@@ -519,12 +512,11 @@
       cap.status = 'connected';
       cap.statusTone = 'good';
       renderCapList();
-      log(`${cap.name} connected.`);
     } catch (err) {
-      if (err.name === 'NotFoundError') {
-        log('No cap selected.');
-      } else {
-        log(`Error: ${err.message}`);
+      // NotFoundError = user cancelled the chooser. Anything else: log to console
+      // (visible in DevTools) so the activity log isn't needed to debug.
+      if (err.name !== 'NotFoundError') {
+        console.error('findCap error:', err);
       }
     }
   }
@@ -536,7 +528,6 @@
       if (cap.device.gatt && cap.device.gatt.connected) cap.device.gatt.disconnect();
     } catch (e) {}
     caps.delete(id);
-    log(`${cap.name} removed.`);
     renderCapList();
   }
 
@@ -545,17 +536,14 @@
     cap.txChar = null;
     cap.status = 'connection lost';
     cap.statusTone = 'warn';
-    log(`${cap.name}: connection lost.`);
     renderCapList();
   }
 
   function quitAll() {
-    log(`Quitting — disconnecting ${caps.size} cap(s)…`);
     const ids = Array.from(caps.keys());
     for (const id of ids) removeCap(id);
     selectedLevel = null;
     el.modeBtns.forEach(b => b.classList.remove('is-selected'));
-    log('Done.');
   }
 
   function onNotify(cap, event) {
@@ -594,7 +582,6 @@
     if (selected.length === 0) return;
 
     const m = MODE_LABELS[selectedLevel];
-    log(`Programming ${m.name} (${m.psi} PSI) to ${selected.length} cap(s)…`);
 
     el.findBtn.disabled = true;
     el.programBtn.disabled = true;
@@ -612,22 +599,16 @@
       const ack = await sendAndWait(cap, payload, 3000);
       if (ack === null) {
         cap.status = 'no reply'; cap.statusTone = 'warn';
-        log(`${cap.name}: no reply.`);
       } else if (ack.length > 0 && ack[0] === 0x50) {
         cap.currentLevel = selectedLevel;
         cap.status = `${m.name} (${m.psi} PSI)`; cap.statusTone = 'good';
-        log(`${cap.name}: set to ${m.name}.`);
       } else if (ack.length > 0 && ack[0] === 0x45) {
         cap.status = 'rejected'; cap.statusTone = 'warn';
-        log(`${cap.name}: cap rejected the value.`);
       } else {
-        const hex = Array.from(ack).map(b => b.toString(16).padStart(2,'0')).join(' ');
         cap.status = 'unexpected reply'; cap.statusTone = 'warn';
-        log(`${cap.name}: unexpected reply ${hex}`);
       }
     });
     await Promise.all(tasks);
-    log(`Done. ${tasks.length} write(s) sent.`);
 
     el.findBtn.disabled = false;
     el.modeBtns.forEach(b => b.disabled = false);
