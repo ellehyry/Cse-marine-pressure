@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#F5F1EB">
+  <title>Pressure Mode</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg:        #F5F1EB;
+      --bg-card:   #FBFAF6;
+      --ink:       #1A1A19;
+      --ink-soft:  #5C5A56;
+      --ink-mute:  #94918B;
+      --line:      #E5DFD4;
+      --accent:        #0B4A52;
+      --accent-hover:  #083B41;
+      --accent-soft:   #0B4A521A;
+      --warn:    #B5523A;
+      --warn-soft: #B5523A14;
+      --warn-bg:   #FBE9E0;
+      --good:    #2A6A4A;
+
+      --font-display: 'Fraunces', 'Georgia', serif;
+      --font-body:    'Geist', system-ui, sans-serif;
+      --font-mono:    'Geist Mono', ui-monospace, monospace;
+
+      --radius:    12px;
+      --radius-lg: 20px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      background: var(--bg); color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 16px; line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh; min-height: 100svh;
+    }
+    .app {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 32px 24px 64px;
+    }
+
+    /* Header / logo */
+    header { margin-bottom: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-logo { max-height: 42px; width: auto; display: block; }
+    .brand-text {
+      font-family: var(--font-display); font-weight: 500;
+      font-size: 28px; letter-spacing: -0.02em; color: var(--ink); line-height: 1;
+    }
+    .brand-text em { font-style: italic; font-weight: 400; color: var(--accent); }
+    .brand-sub {
+      font-size: 13px; letter-spacing: 0.04em; text-transform: uppercase;
+      color: var(--ink-mute); margin-top: 6px;
+    }
+
+    /* Red install banner */
+    .install-banner {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin: 18px 0 22px;
+      font-size: 14px; line-height: 1.55;
+      color: #5A1F0F;
+    }
+    .install-banner h2 {
+      margin: 0 0 8px;
+      font-family: var(--font-body);
+      font-size: 14px; font-weight: 600;
+      color: var(--warn);
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .install-banner ol { margin: 0; padding-left: 22px; }
+    .install-banner li + li { margin-top: 4px; }
+    .install-banner strong { color: #4a1a0c; }
+
+    /* Sections */
+    section {
+      background: var(--bg-card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 22px 24px;
+      margin-bottom: 16px;
+    }
+    .section-label {
+      font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--ink-mute); margin-bottom: 14px;
+    }
+
+    /* Buttons */
+    .btn {
+      font-family: var(--font-body);
+      font-size: 15px; font-weight: 500;
+      border-radius: var(--radius);
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: transform 0.08s ease, background 0.15s ease,
+                  border-color 0.15s ease, color 0.15s ease;
+      -webkit-tap-highlight-color: transparent;
+      padding: 12px 18px;
+    }
+    .btn:active:not(:disabled) { transform: translateY(1px); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-primary { background: var(--accent); color: var(--bg); border: 1px solid var(--accent); }
+    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
+    .btn-ghost { background: transparent; color: var(--ink-soft); border: 1px solid var(--line); }
+    .btn-ghost:hover:not(:disabled) { border-color: var(--ink-soft); color: var(--ink); }
+    .btn-warn { background: transparent; color: var(--warn); border: 1px solid var(--warn); }
+    .btn-warn:hover:not(:disabled) { background: var(--warn-soft); }
+    .btn-block { width: 100%; padding: 14px; }
+    .btn-small { padding: 6px 12px; font-size: 13px; }
+
+    /* Find caps section */
+    .add-help { font-size: 14px; color: var(--ink-soft); margin: 0 0 14px; }
+
+    .cap-controls {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 14px;
+      font-size: 13px; color: var(--ink-mute);
+    }
+    .cap-controls a {
+      color: var(--accent); text-decoration: none;
+      cursor: pointer; font-weight: 500;
+    }
+    .cap-controls a:hover { text-decoration: underline; }
+    .cap-controls a + a { margin-left: 10px; }
+
+    /* Cap rows */
+    .cap-list { display: flex; flex-direction: column; gap: 8px; }
+    .cap-empty {
+      font-size: 14px; color: var(--ink-mute); font-style: italic; padding: 8px 0;
+    }
+    .cap-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      transition: border-color 0.15s ease;
+    }
+    .cap-row.is-selected {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+    .cap-checkbox {
+      appearance: none;
+      width: 20px; height: 20px;
+      border: 1.5px solid var(--line);
+      border-radius: 5px;
+      cursor: pointer;
+      position: relative;
+      background: var(--bg-card);
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .cap-checkbox:checked { background: var(--accent); border-color: var(--accent); }
+    .cap-checkbox:checked::after {
+      content: '';
+      position: absolute;
+      left: 5px; top: 1px;
+      width: 6px; height: 11px;
+      border: solid var(--bg);
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+    .cap-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .cap-name {
+      font-family: var(--font-mono);
+      font-size: 14px; font-weight: 500;
+      color: var(--ink); letter-spacing: -0.01em;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .cap-status {
+      font-size: 12px; color: var(--ink-mute);
+      font-variant-numeric: tabular-nums;
+    }
+    .cap-status[data-tone="good"]    { color: var(--good); }
+    .cap-status[data-tone="warn"]    { color: var(--warn); }
+    .cap-status[data-tone="working"] { color: var(--accent); }
+    .cap-status[data-tone="working"]::after {
+      content: '';
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-left: 6px;
+      animation: pulse 1s ease infinite;
+      vertical-align: middle;
+    }
+    @keyframes pulse { 0%,100% {opacity:1;} 50% {opacity:0.3;} }
+
+    /* Mode picker — horizontal 4-up grid */
+    .mode-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .mode-btn {
+      padding: 14px 8px;
+      background: transparent;
+      border: 1.5px solid var(--line);
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.15s ease;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .mode-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
+    .mode-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .mode-btn.is-selected {
+      background: var(--accent); border-color: var(--accent); color: var(--bg);
+    }
+    .mode-btn-name {
+      font-family: var(--font-display); font-weight: 500;
+      font-size: 18px; letter-spacing: -0.01em;
+    }
+    .mode-btn-psi { font-size: 12px; color: var(--ink-mute); }
+    .mode-btn.is-selected .mode-btn-psi { color: rgba(245, 241, 235, 0.75); }
+
+    .apply-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    /* Activity log */
+    .log {
+      font-family: var(--font-mono);
+      font-size: 12px; line-height: 1.6;
+      color: var(--ink-soft);
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      max-height: 200px; overflow-y: auto;
+      white-space: pre-wrap; word-break: break-all;
+      margin: 0;
+    }
+    .log:empty::before {
+      content: 'No activity yet.';
+      color: var(--ink-mute);
+      font-style: italic;
+    }
+
+    .unsupported {
+      background: #FFFBEA;
+      border: 1px solid #E8D8A0;
+      color: #5A4920;
+      padding: 14px 18px;
+      border-radius: var(--radius);
+      font-size: 14px;
+      margin-bottom: 16px;
+      line-height: 1.55;
+    }
+    .unsupported strong { display: block; margin-bottom: 4px; color: #3D3110; }
+  </style>
+</head>
+<body>
+  <main class="app">
+
+    <header>
+      <div class="brand">
+        <img class="brand-logo"
+             src="logo.png"
+             alt="CSE Marine"
+             onerror="this.style.display='none'; document.getElementById('brandText').style.display='inline-block';">
+        <span class="brand-text" id="brandText" style="display: none;">CSE <em>Marine</em></span>
+      </div>
+      <div class="brand-sub">Pressure Mode</div>
+    </header>
+
+    <!-- Red install banner -->
+    <div class="install-banner">
+      <h2>Setup</h2>
+      <ol>
+        <li>Make sure your <strong>Neversoft cap</strong> is installed in the boat.</li>
+        <li>Each cap has a <strong>10-minute pairing window</strong>. Connect within that window.</li>
+        <li>Tap <strong>Find caps</strong>, pick your cap from the chooser, then program a mode.</li>
+      </ol>
+    </div>
+
+    <div class="unsupported" id="unsupportedBanner" style="display: none;">
+      <strong>Your browser doesn't support Web Bluetooth.</strong>
+      Open this page in Chrome or Edge on a Mac, Windows PC, or Android device.
+    </div>
+
+    <section>
+      <div class="section-label">Caps</div>
+      <p class="add-help">
+        Tap <strong>Find caps</strong>, pick a cap from your browser's chooser, and it joins
+        the list below. Tap it again to add more.
+      </p>
+      <button class="btn btn-primary" id="btnFindCaps">+ Find caps</button>
+
+      <div class="cap-list" id="capList" style="margin-top: 16px;">
+        <!-- populated by JS -->
+      </div>
+
+      <div class="cap-controls" id="capControls" style="display: none;">
+        <div>
+          <a id="selectAll">Select all</a>
+          <a id="selectNone">Select none</a>
+        </div>
+        <span id="selectedCount"></span>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-label">Target mode (applies to selected caps above)</div>
+      <div class="mode-grid">
+        <button class="mode-btn" data-level="1">
+          <span class="mode-btn-name">Mode 1</span>
+          <span class="mode-btn-psi">2.0 PSI</span>
+        </button>
+        <button class="mode-btn" data-level="2">
+          <span class="mode-btn-name">Mode 2</span>
+          <span class="mode-btn-psi">2.5 PSI</span>
+        </button>
+        <button class="mode-btn" data-level="3">
+          <span class="mode-btn-name">Mode 3</span>
+          <span class="mode-btn-psi">3.0 PSI</span>
+        </button>
+        <!-- Mode 4 UI label is 3.5 PSI but firmware sets 3.3 PSI -->
+        <button class="mode-btn" data-level="4">
+          <span class="mode-btn-name">Mode 4</span>
+          <span class="mode-btn-psi">3.5 PSI</span>
+        </button>
+      </div>
+      <div class="apply-row">
+        <button class="btn btn-primary btn-block" id="btnProgram" disabled>
+          Program
+        </button>
+        <button class="btn btn-warn btn-block" id="btnQuit" disabled>
+          Quit
+        </button>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-label">Activity log</div>
+      <pre class="log" id="log"></pre>
+    </section>
+
+  </main>
+
+  <script>
+  /* ===========================================================================
+   *  CSE Marine — Pressure Mode
+   *
+   *  Wire format (firmware main.c / inits.c):
+   *    'p' + ASCII digit  -> set pressure level (1-4)
+   *    Response success: 'P' + digit + CRLF
+   *    Response reject:  'E' + CRLF
+   *
+   *  Firmware level -> PSI mapping:
+   *    1 (default) -> 2.0 PSI
+   *    2 -> 2.5 PSI
+   *    3 -> 3.0 PSI
+   *    4 -> 3.3 PSI (UI says 3.5, firmware update pending)
+   * ========================================================================= */
+
+  const NUS_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+  const NUS_RX_CHAR = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+  const NUS_TX_CHAR = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+
+  const MODE_LABELS = {
+    1: { name: 'Mode 1', psi: '2.0' },
+    2: { name: 'Mode 2', psi: '2.5' },
+    3: { name: 'Mode 3', psi: '3.0' },
+    4: { name: 'Mode 4', psi: '3.5' },
+  };
+
+  const caps = new Map();
+  let selectedLevel = null;
+
+  const el = {
+    findBtn:        document.getElementById('btnFindCaps'),
+    programBtn:     document.getElementById('btnProgram'),
+    quitBtn:        document.getElementById('btnQuit'),
+    capList:        document.getElementById('capList'),
+    capControls:    document.getElementById('capControls'),
+    selectAll:      document.getElementById('selectAll'),
+    selectNone:     document.getElementById('selectNone'),
+    selectedCount:  document.getElementById('selectedCount'),
+    modeBtns:       document.querySelectorAll('.mode-btn'),
+    log:            document.getElementById('log'),
+    unsupported:    document.getElementById('unsupportedBanner'),
+  };
+
+  if (!navigator.bluetooth) {
+    el.unsupported.style.display = 'block';
+    el.findBtn.disabled = true;
+  }
+
+  function log(line) {
+    const ts = new Date().toLocaleTimeString();
+    el.log.textContent += `[${ts}] ${line}\n`;
+    el.log.scrollTop = el.log.scrollHeight;
+  }
+
+  function encodeLevel(level) {
+    if (!Number.isInteger(level) || level < 1 || level > 4) {
+      throw new Error(`Unsupported level: ${level}`);
+    }
+    return new Uint8Array([0x70, 0x30 + level]);
+  }
+
+  function renderCapList() {
+    const list = Array.from(caps.values());
+    if (list.length === 0) {
+      el.capList.innerHTML = '<div class="cap-empty">No caps yet.</div>';
+      el.capControls.style.display = 'none';
+      updateControls();
+      return;
+    }
+
+    el.capList.innerHTML = '';
+    for (const cap of list) {
+      const row = document.createElement('label');
+      row.className = 'cap-row' + (cap.selected ? ' is-selected' : '');
+      row.innerHTML = `
+        <input type="checkbox" class="cap-checkbox" data-id="${cap.id}"${cap.selected ? ' checked' : ''}>
+        <div class="cap-info">
+          <span class="cap-name"></span>
+          <span class="cap-status"></span>
+        </div>
+        <button class="btn btn-ghost btn-small" data-remove="${cap.id}">Remove</button>
+      `;
+      row.querySelector('.cap-name').textContent = cap.name;
+      const statusEl = row.querySelector('.cap-status');
+      statusEl.textContent = cap.status;
+      if (cap.statusTone) statusEl.setAttribute('data-tone', cap.statusTone);
+      el.capList.appendChild(row);
+    }
+
+    el.capList.querySelectorAll('.cap-checkbox').forEach(cb => {
+      cb.addEventListener('change', () => {
+        const cap = caps.get(cb.dataset.id);
+        if (cap) {
+          cap.selected = cb.checked;
+          renderCapList();
+        }
+      });
+    });
+    el.capList.querySelectorAll('[data-remove]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        removeCap(btn.dataset.remove);
+      });
+    });
+
+    el.capControls.style.display = 'flex';
+    const sel = list.filter(c => c.selected).length;
+    el.selectedCount.textContent = `${sel} of ${list.length} selected`;
+
+    updateControls();
+  }
+
+  function updateControls() {
+    const list = Array.from(caps.values());
+    const selectedConnected = list.filter(c => c.selected && c.rxChar).length;
+    const hasMode = selectedLevel !== null;
+
+    el.programBtn.disabled = !(selectedConnected > 0 && hasMode);
+    el.quitBtn.disabled = list.length === 0;
+
+    if (hasMode && selectedConnected > 0) {
+      const m = MODE_LABELS[selectedLevel];
+      el.programBtn.textContent =
+        `Program ${m.name} to ${selectedConnected} cap${selectedConnected === 1 ? '' : 's'}`;
+    } else {
+      el.programBtn.textContent = 'Program';
+    }
+  }
+
+  async function findCap() {
+    try {
+      log('Opening cap chooser…');
+      const device = await navigator.bluetooth.requestDevice({
+        filters: [{ namePrefix: 'CSE_Marine_' }],
+        optionalServices: [NUS_SERVICE],
+      });
+      if (caps.has(device.id)) {
+        log(`${device.name} is already in the list.`);
+        return;
+      }
+      const cap = {
+        id: device.id, name: device.name || '(unnamed)',
+        device, rxChar: null, txChar: null, pending: null,
+        selected: true, currentLevel: null,
+        status: 'connecting…', statusTone: 'working',
+      };
+      caps.set(device.id, cap);
+      renderCapList();
+      log(`Connecting to ${cap.name}…`);
+      device.addEventListener('gattserverdisconnected', () => onCapDisconnected(cap));
+      const server = await device.gatt.connect();
+      const service = await server.getPrimaryService(NUS_SERVICE);
+      cap.rxChar = await service.getCharacteristic(NUS_RX_CHAR);
+      cap.txChar = await service.getCharacteristic(NUS_TX_CHAR);
+      await cap.txChar.startNotifications();
+      cap.txChar.addEventListener('characteristicvaluechanged', (e) => onNotify(cap, e));
+      cap.status = 'connected';
+      cap.statusTone = 'good';
+      renderCapList();
+      log(`${cap.name} connected.`);
+    } catch (err) {
+      if (err.name === 'NotFoundError') {
+        log('No cap selected.');
+      } else {
+        log(`Error: ${err.message}`);
+      }
+    }
+  }
+
+  function removeCap(id) {
+    const cap = caps.get(id);
+    if (!cap) return;
+    try {
+      if (cap.device.gatt && cap.device.gatt.connected) cap.device.gatt.disconnect();
+    } catch (e) {}
+    caps.delete(id);
+    log(`${cap.name} removed.`);
+    renderCapList();
+  }
+
+  function onCapDisconnected(cap) {
+    cap.rxChar = null;
+    cap.txChar = null;
+    cap.status = 'connection lost';
+    cap.statusTone = 'warn';
+    log(`${cap.name}: connection lost.`);
+    renderCapList();
+  }
+
+  function quitAll() {
+    log(`Quitting — disconnecting ${caps.size} cap(s)…`);
+    const ids = Array.from(caps.keys());
+    for (const id of ids) removeCap(id);
+    selectedLevel = null;
+    el.modeBtns.forEach(b => b.classList.remove('is-selected'));
+    log('Done.');
+  }
+
+  function onNotify(cap, event) {
+    const value = event.target.value;
+    const bytes = new Uint8Array(value.buffer, value.byteOffset, value.byteLength);
+    if (cap.pending) {
+      const r = cap.pending;
+      cap.pending = null;
+      r(bytes);
+    }
+  }
+
+  function sendAndWait(cap, bytes, timeoutMs = 3000) {
+    return new Promise(async (resolve) => {
+      if (!cap.rxChar) { resolve(null); return; }
+      const localResolve = (data) => { clearTimeout(timer); resolve(data); };
+      const timer = setTimeout(() => {
+        if (cap.pending === localResolve) { cap.pending = null; resolve(null); }
+      }, timeoutMs);
+      cap.pending = localResolve;
+      try {
+        await cap.rxChar.writeValueWithResponse(bytes);
+      } catch (err) {
+        if (cap.pending === localResolve) {
+          cap.pending = null;
+          clearTimeout(timer);
+        }
+        resolve(null);
+      }
+    });
+  }
+
+  async function programSelected() {
+    if (selectedLevel === null) return;
+    const selected = Array.from(caps.values()).filter(c => c.selected && c.rxChar);
+    if (selected.length === 0) return;
+
+    const m = MODE_LABELS[selectedLevel];
+    log(`Programming ${m.name} (${m.psi} PSI) to ${selected.length} cap(s)…`);
+
+    el.findBtn.disabled = true;
+    el.programBtn.disabled = true;
+    el.quitBtn.disabled = true;
+    el.modeBtns.forEach(b => b.disabled = true);
+
+    for (const cap of selected) {
+      cap.status = `programming ${m.name}…`;
+      cap.statusTone = 'working';
+    }
+    renderCapList();
+
+    const payload = encodeLevel(selectedLevel);
+    const tasks = selected.map(async (cap) => {
+      const ack = await sendAndWait(cap, payload, 3000);
+      if (ack === null) {
+        cap.status = 'no reply'; cap.statusTone = 'warn';
+        log(`${cap.name}: no reply.`);
+      } else if (ack.length > 0 && ack[0] === 0x50) {
+        cap.currentLevel = selectedLevel;
+        cap.status = `${m.name} (${m.psi} PSI)`; cap.statusTone = 'good';
+        log(`${cap.name}: set to ${m.name}.`);
+      } else if (ack.length > 0 && ack[0] === 0x45) {
+        cap.status = 'rejected'; cap.statusTone = 'warn';
+        log(`${cap.name}: cap rejected the value.`);
+      } else {
+        const hex = Array.from(ack).map(b => b.toString(16).padStart(2,'0')).join(' ');
+        cap.status = 'unexpected reply'; cap.statusTone = 'warn';
+        log(`${cap.name}: unexpected reply ${hex}`);
+      }
+    });
+    await Promise.all(tasks);
+    log(`Done. ${tasks.length} write(s) sent.`);
+
+    el.findBtn.disabled = false;
+    el.modeBtns.forEach(b => b.disabled = false);
+    renderCapList();
+  }
+
+  el.findBtn.addEventListener('click', findCap);
+  el.programBtn.addEventListener('click', programSelected);
+  el.quitBtn.addEventListener('click', quitAll);
+
+  el.selectAll.addEventListener('click', (e) => {
+    e.preventDefault();
+    for (const c of caps.values()) c.selected = true;
+    renderCapList();
+  });
+  el.selectNone.addEventListener('click', (e) => {
+    e.preventDefault();
+    for (const c of caps.values()) c.selected = false;
+    renderCapList();
+  });
+
+  el.modeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedLevel = Number(btn.dataset.level);
+      el.modeBtns.forEach(b => b.classList.toggle('is-selected', b === btn));
+      updateControls();
+    });
+  });
+
+  renderCapList();
+
+  window.addEventListener('beforeunload', () => {
+    for (const cap of caps.values()) {
+      try {
+        if (cap.device.gatt && cap.device.gatt.connected) cap.device.gatt.disconnect();
+      } catch (e) {}
+    }
+  });
+  </script>
+</body>
+</html>
