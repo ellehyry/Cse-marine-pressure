@@ -78,10 +78,6 @@
       font-size: 32px; letter-spacing: -0.02em; color: var(--ink); line-height: 1;
     }
     .brand-text em { font-style: italic; font-weight: 400; color: var(--accent); }
-    .brand-sub {
-      font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
-      color: var(--ink-mute); margin-top: 4px;
-    }
 
     /* Setup banner — all colors from design tokens (blue family). */
     .install-banner {
@@ -201,7 +197,14 @@
       font-family: var(--font-mono);
       font-size: 14px; font-weight: 500;
       color: var(--ink); letter-spacing: -0.01em;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      /* Allow the name to wrap if the row is too narrow rather than
+         truncating with an ellipsis. Cap names follow the predictable
+         format CSE_Marine_XXXX (15 chars) so they fit on one line at
+         normal phone widths; this just prevents truncation on the
+         narrowest viewports or with future longer names. word-break
+         is needed because underscores aren't natural break points. */
+      word-break: break-all;
+      overflow-wrap: anywhere;
     }
     .cap-status {
       font-size: 12px; color: var(--ink-mute);
@@ -289,7 +292,6 @@
              alt="CSE Marine"
              onerror="this.style.display='none'; document.getElementById('brandText').style.display='inline-block';">
         <span class="brand-text" id="brandText" style="display: none;">CSE <em>Marine</em></span>
-        <div class="brand-sub">Pressure Mode</div>
       </div>
     </header>
 
@@ -297,8 +299,10 @@
     <div class="install-banner">
       <h2>Setup</h2>
       <ol>
-        <li>Install the caps in the boat.</li>
-        <li><strong>This will start a 10 minute pairing window.</strong></li>
+        <li>
+          Install the caps in the boat.<br>
+          <strong>This will start a 10 minute pairing window.</strong>
+        </li>
         <li>Tap <strong>Find caps</strong>, pick your cap from the chooser, then program a mode.</li>
       </ol>
     </div>
@@ -521,9 +525,29 @@
     }
   }
 
-  function removeCap(id) {
+  async function removeCap(id) {
     const cap = caps.get(id);
     if (!cap) return;
+
+    // v2.7.h: send 'q' to the PIC over BLE before tearing down the link,
+    // so the PIC drops BLE_Active immediately and can sleep on disconnect.
+    // Mirrors what the laptop dev tool does (cse_devtool_gm.py quit
+    // command). Use writeValueWithResponse so the BC805M ACKs the write
+    // before we move on, then wait 250ms for the BC805M to forward the
+    // byte to the PIC over its 38400-baud UART. Without these waits, the
+    // disconnect tears down the link before 'q' goes over the air and the
+    // PIC has to wait the full 3-minute WakeAdvertiseTim before BLE_Active
+    // drops. Wrapped in try/catch — if it fails (link already lost, etc.)
+    // we still want to disconnect cleanly.
+    if (cap.rxChar && cap.device.gatt && cap.device.gatt.connected) {
+      try {
+        await cap.rxChar.writeValueWithResponse(new Uint8Array([0x71])); // 'q'
+        await new Promise(r => setTimeout(r, 250));
+      } catch (e) {
+        // Link probably already gone; proceed to disconnect anyway.
+      }
+    }
+
     try {
       if (cap.device.gatt && cap.device.gatt.connected) cap.device.gatt.disconnect();
     } catch (e) {}
@@ -539,11 +563,23 @@
     renderCapList();
   }
 
-  function quitAll() {
+  async function quitAll() {
+    // Fire all removeCap calls in parallel — each one sends 'q' to its cap,
+    // waits 250ms, then disconnects. Parallel is safe because each cap has
+    // its own BLE link. Sequential would be N × 250ms wait, which gets slow
+    // with multiple caps; parallel is bounded by the slowest single cap.
     const ids = Array.from(caps.keys());
-    for (const id of ids) removeCap(id);
+
+    // Disable buttons while quitting so user can't double-tap
+    el.findBtn.disabled = true;
+    el.quitBtn.disabled = true;
+
+    await Promise.all(ids.map(id => removeCap(id)));
+
     selectedLevel = null;
     el.modeBtns.forEach(b => b.classList.remove('is-selected'));
+    el.findBtn.disabled = false;
+    // quitBtn will be re-disabled by updateControls() since caps is empty now
   }
 
   function onNotify(cap, event) {
@@ -641,8 +677,15 @@
   renderCapList();
 
   window.addEventListener('beforeunload', () => {
+    // Best-effort cleanup. Browsers give very limited time for async work
+    // during beforeunload, so writeValueWithResponse may not flush before
+    // the tab closes. We still try — if it succeeds, the PIC gets the 'q'
+    // and can sleep right away; if not, the PIC waits its normal timeout.
     for (const cap of caps.values()) {
       try {
+        if (cap.rxChar && cap.device.gatt && cap.device.gatt.connected) {
+          cap.rxChar.writeValueWithResponse(new Uint8Array([0x71])); // 'q'
+        }
         if (cap.device.gatt && cap.device.gatt.connected) cap.device.gatt.disconnect();
       } catch (e) {}
     }
