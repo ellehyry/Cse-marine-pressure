@@ -333,8 +333,8 @@
    *  GITHUB_ASSET  filename of the .img asset in the release, or null to use
    *                the first .img asset found in the release.
    * ─────────────────────────────────────────────────────────────────────────*/
-  const GITHUB_REPO  = 'YOUR_ORG/YOUR_REPO';   // ← set this
-  const GITHUB_ASSET = null;                    // ← set to 'app_v1.img' or leave null
+  const GITHUB_REPO  = 'YOUR_ORG/YOUR_REPO';   // <-- set this
+  const GITHUB_ASSET = null;                    // <-- set to 'app_v1.img' or leave null
 
   /* ── Wire format / MDFU protocol (unchanged — see block comment below) ── */
   /*
@@ -370,37 +370,6 @@
    *    3. Run MDFU session: GET_CLIENT_INFO → START_TRANSFER → WRITE_CHUNKs
    *       → GET_IMAGE_STATE → END_TRANSFER
    * =========================================================================*/
-   *    'p' + ASCII digit  -> set pressure level (1-4)
-   *    Success: 'P' + digit + CRLF    Reject: 'E' + CRLF
-   *
-   *  OTA wire format — MDFU protocol over BLE NUS (mirrors pymdfu internals):
-   *
-   *    UART transport framing  (uart_transport.py):
-   *      Frame = 0x56 + escape(MDFU_packet + CRC16_LE) + 0x9E
-   *      Escape: 0x56→[CC,A9]  0x9E→[CC,61]  0xCC→[CC,33]
-   *      CRC = 16-bit two's-complement sum of LE uint16 words (utils.py)
-   *
-   *    MDFU packet  (mdfu.py):
-   *      CMD:    [seq_field, cmd_byte, ...data]
-   *              seq_field = seq_num | (0x80 if sync)
-   *      STATUS: [seq_field, status_byte, ...data]
-   *              seq_field = seq_num | (0x40 if resend)
-   *
-   *    Commands (MdfuCmd):
-   *      1 GET_CLIENT_INFO   2 START_TRANSFER
-   *      3 WRITE_CHUNK       4 GET_IMAGE_STATE
-   *      5 END_TRANSFER
-   *
-   *    Status (MdfuStatus):
-   *      1 SUCCESS  2 CMD_NOT_SUPPORTED  3 NOT_AUTHORIZED
-   *      4 CMD_NOT_EXECUTED  5 ABORT_FILE_TRANSFER
-   *
-   *  OTA sequence:
-   *    1. Send 'b' primer (primes BLE link, avoids first-byte drop)
-   *    2. Send 'O' trigger (PIC → bootloader DFU mode, BLE link stays up)
-   *    3. Run MDFU session: GET_CLIENT_INFO → START_TRANSFER → WRITE_CHUNKs
-   *       → GET_IMAGE_STATE → END_TRANSFER
-   * ========================================================================= */
 
   const NUS_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
   const NUS_RX_CHAR = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
