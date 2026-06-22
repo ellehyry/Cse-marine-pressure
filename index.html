@@ -333,16 +333,9 @@
    *  GITHUB_ASSET  filename of the .img asset in the release, or null to use
    *                the first .img asset found in the release.
    * ─────────────────────────────────────────────────────────────────────────*/
-  // FIRMWARE CONFIG
-  // Set this to your GitHub repo. The page hits the Releases API to find the
-  // latest release, then downloads the first .img asset automatically.
-  // Just cut a new GitHub Release whenever you have new firmware — no URL
-  // changes needed here ever.
-  //
-  // GITHUB_ASSET: name of the .img file in the release, or null to use the
-  // first .img asset found.
-  const GITHUB_REPO  = 'ellehyry/Cse-marine-pressure';
-  const GITHUB_ASSET = null;
+  // FIRMWARE CONFIG — update this URL when there is new firmware.
+  // Format: the direct release download URL wrapped in corsproxy.io.
+  const FIRMWARE_URL = 'https://corsproxy.io/?url=https://github.com/ellehyry/Cse-marine-pressure/releases/download/v3.2/NS_application_OTA_v3.2.img';
 
   /* ── Wire format / MDFU protocol (unchanged — see block comment below) ── */
   /*
@@ -1053,70 +1046,26 @@
   }
 
   async function fetchLatestRelease() {
-    fwCardState('loading', 'Checking for latest release…', '');
+    fwCardState('loading', 'Downloading firmware…', '');
     el.btnRefetch.disabled = true;
-
     try {
-      // Step 1: hit the Releases API to find the latest release and asset URL.
-      // This call has no CORS issues — api.github.com sends correct headers.
-      const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
-      const apiRes = await fetch(apiUrl, { headers: { Accept: 'application/vnd.github+json' } });
-
-      if (!apiRes.ok) {
-        fwCardState('error',
-          apiRes.status === 404 ? 'No releases found in this repo yet.' : `GitHub API error ${apiRes.status}`,
-          apiUrl
-        );
-        return;
-      }
-
-      const release = await apiRes.json();
-      const tag = release.tag_name || release.name || '(unnamed)';
-      const assets = release.assets || [];
-      const asset = GITHUB_ASSET
-        ? assets.find(a => a.name === GITHUB_ASSET)
-        : assets.find(a => a.name.endsWith('.img'));
-
-      if (!asset) {
-        fwCardState('error',
-          `No .img found in release ${tag}`,
-          `Assets: ${assets.map(a => a.name).join(', ') || 'none'}`
-        );
-        return;
-      }
-
-      fetchedAssetName = asset.name;
-      fwCardState('loading', `Downloading ${asset.name} (${tag})…`,
-        `${(asset.size / 1024).toFixed(1)} KB`);
-
-      // Step 2: download the binary via corsproxy.io, which adds
-      // Access-Control-Allow-Origin headers to the GitHub S3 redirect.
-      // corsproxy.io is a free, open-source CORS proxy — if it ever goes
-      // away, replace with any other CORS proxy or commit the file to the
-      // repo and use raw.githubusercontent.com instead.
-      const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(asset.browser_download_url)}`;
-      const dlRes = await fetch(proxyUrl);
-
-      if (!dlRes.ok) throw new Error(`Download failed: HTTP ${dlRes.status}`);
-
-      const buf = await dlRes.arrayBuffer();
+      const filename = FIRMWARE_URL.split('/').pop().split('?')[0];
+      const res = await fetch(FIRMWARE_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const buf = await res.arrayBuffer();
       otaImageBytes = new Uint8Array(buf);
-
+      fetchedAssetName = filename;
       fwCardState('good',
-        `${asset.name}  (${(otaImageBytes.length / 1024).toFixed(1)} KB)`,
-        `Release ${tag} · fetched ${new Date().toLocaleTimeString()}`
+        `${filename}  (${(otaImageBytes.length / 1024).toFixed(1)} KB)`,
+        `Fetched ${new Date().toLocaleTimeString()}`
       );
       updateControls();
-
     } catch (err) {
       fwCardState('error', 'Fetch failed', err.message);
     } finally {
       el.btnRefetch.disabled = false;
     }
   }
-
-  // ── OTA toggle ────────────────────────────────────────────────────────────
-
   el.otaToggle.addEventListener('change', () => {
     otaEnabled = el.otaToggle.checked;
     el.otaConfig.classList.toggle('is-visible', otaEnabled);
