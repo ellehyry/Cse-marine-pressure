@@ -629,7 +629,7 @@
         // Most firmware images are split across many WRITE_CHUNK commands anyway.
         for (let off = 0; off < frame.length; off += 20) {
           const slice = frame.slice(off, off + 20);
-          await cap.rxChar.writeValueWithResponse(slice);
+          await bleWrite(cap.rxChar, slice);
         }
 
         let statusPacket;
@@ -729,7 +729,7 @@
     // (we keep the existing txChar notification subscription active — just
     // swap the listener inside runMdfuUpgrade).
     try {
-      await cap.rxChar.writeValueWithResponse(new Uint8Array([0x4F]));
+      await bleWrite(cap.rxChar, new Uint8Array([0x4F]));
     } catch (e) {
       // Ignore — PIC may reboot so fast the write ACK is lost
     }
@@ -848,10 +848,27 @@
   //  BLE connect / disconnect
   // ══════════════════════════════════════════════════════════════════════════
 
+  // Safe write: tries writeValueWithResponse (Chrome 85+), falls back to
+  // writeValue (older Android Chrome). Both are equivalent for our purposes.
+  async function bleWrite(char, bytes) {
+    if (typeof char.writeValueWithResponse === 'function') {
+      return char.writeValueWithResponse(bytes);
+    }
+    return char.writeValue(bytes);
+  }
+
   async function findCap() {
     try {
+      // The firmware puts the device name in the primary advertisement (ad[])
+      // but the NUS service UUID in the scan response (sd[]). Web Bluetooth
+      // needs to request scan responses to see the UUID, which happens when
+      // you list the service in `filters` rather than only in `optionalServices`.
+      // Using both a namePrefix filter AND the service filter together means
+      // the browser will only show CSE_Marine_* devices that expose NUS.
       const device = await navigator.bluetooth.requestDevice({
-        filters: [{ namePrefix: 'CSE_Marine_' }],
+        filters: [
+          { namePrefix: 'CSE_Marine_', services: [NUS_SERVICE] },
+        ],
         optionalServices: [NUS_SERVICE],
       });
       if (caps.has(device.id)) return;
@@ -868,17 +885,23 @@
       cap.status = 'connected'; cap.statusTone = 'good';
       renderCapList();
     } catch (err) {
-      if (err.name !== 'NotFoundError') console.error('findCap error:', err);
+      if (err.name === 'NotFoundError') return; // user cancelled picker — silent
+      // Surface the real error in the cap list so it's visible on mobile
+      // (DevTools isn't available there)
+      const errCap = { id: 'err-' + Date.now(), name: '⚠ ' + err.message, device: null, rxChar: null, txChar: null, pending: null, selected: false, currentLevel: null, status: err.name, statusTone: 'danger' };
+      caps.set(errCap.id, errCap);
+      renderCapList();
+      console.error('findCap error:', err);
     }
   }
 
   async function removeCap(id) {
     const cap = caps.get(id);
     if (!cap) return;
-    if (cap.rxChar && cap.device.gatt && cap.device.gatt.connected) {
-      try { await cap.rxChar.writeValueWithResponse(new Uint8Array([0x71])); await new Promise(r=>setTimeout(r,250)); } catch(e){}
+    if (cap.rxChar && cap.device?.gatt?.connected) {
+      try { await bleWrite(cap.rxChar, new Uint8Array([0x71])); await new Promise(r=>setTimeout(r,250)); } catch(e){}
     }
-    try { if (cap.device.gatt?.connected) cap.device.gatt.disconnect(); } catch(e){}
+    try { if (cap.device?.gatt?.connected) cap.device.gatt.disconnect(); } catch(e){}
     caps.delete(id);
     renderCapList();
   }
@@ -915,7 +938,7 @@
       const timer = setTimeout(() => { if (cap.pending === localResolve) { cap.pending = null; resolve(null); } }, timeoutMs);
       cap.pending = localResolve;
       try {
-        await cap.rxChar.writeValueWithResponse(bytes);
+        await bleWrite(cap.rxChar, bytes);
       } catch (err) {
         if (cap.pending === localResolve) { cap.pending = null; clearTimeout(timer); }
         resolve(null);
@@ -1181,7 +1204,7 @@
 
   window.addEventListener('beforeunload', () => {
     for (const cap of caps.values()) {
-      try { if (cap.rxChar && cap.device.gatt?.connected) cap.rxChar.writeValueWithResponse(new Uint8Array([0x71])); } catch(e){}
+      try { if (cap.rxChar && cap.device?.gatt?.connected) bleWrite(cap.rxChar, new Uint8Array([0x71])); } catch(e){}
       try { if (cap.device.gatt?.connected) cap.device.gatt.disconnect(); } catch(e){}
     }
   });
