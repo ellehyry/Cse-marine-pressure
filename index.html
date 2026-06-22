@@ -737,30 +737,91 @@
   async function reconnectAndReprogram(cap, maxWaitMs = 30000, retryIntervalMs = 2000) {
     const name = cap.name;
     const deadline = Date.now() + maxWaitMs;
-    let attempt = 0;
 
-    // ── Step 1: reconnect ──
-    while (Date.now() < deadline) {
-      attempt++;
-      cap.status = `reconnecting… (${attempt})`; cap.statusTone = 'working';
+    // ── Step 1: scan for the cap by name and reconnect ──
+    // The BLE address changes after reboot so we can't reuse the old device
+    // object. Instead we scan for the same CSE_Marine_XXXX name using
+    // requestDevice — this shows the picker pre-filtered to just that one
+    // device so the user just taps it when it appears.
+    olLog(`[${name}] Waiting for cap to reboot and re-advertise…`, 'lm');
+    olLog(`[${name}] A picker will appear — tap the device when it shows up.`, 'lm');
+
+    cap.status = 'waiting to reconnect… tap device in picker'; cap.statusTone = 'working';
+    renderCapList();
+
+    // Wait for the cap to reboot and re-advertise
+    await new Promise(r => setTimeout(r, 2500));
+
+    // Try getDevices() first — if the browser has the new device instance
+    // already cached under the same name we can connect without a picker.
+    // This works when the browser re-discovers the cap during the reboot
+    // window and updates its paired device list automatically.
+    let newDevice = null;
+    const deadline2 = Date.now() + maxWaitMs;
+
+    while (Date.now() < deadline2) {
+      cap.status = `scanning for ${name}…`; cap.statusTone = 'working';
+      renderCapList();
+
+      try {
+        const known = await navigator.bluetooth.getDevices();
+        const match = known.find(d => d.name === name);
+        if (match) {
+          // Try connecting — if the cap isn't advertising yet this will throw
+          const server = await match.gatt.connect();
+          // Connected — use this device going forward
+          newDevice = match;
+          caps.delete(cap.id);
+          cap.id     = newDevice.id;
+          cap.device = newDevice;
+          caps.set(cap.id, cap);
+          newDevice.addEventListener('gattserverdisconnected', () => onCapDisconnected(cap));
+          const service = await server.getPrimaryService(NUS_SERVICE);
+          cap.rxChar    = await service.getCharacteristic(NUS_RX_CHAR);
+          cap.txChar    = await service.getCharacteristic(NUS_TX_CHAR);
+          await cap.txChar.startNotifications();
+          cap.txChar.addEventListener('characteristicvaluechanged', (e) => onNotify(cap, e));
+          olLog(`[${name}] Auto-reconnected via cached device.`, 'lg');
+          break;
+        }
+      } catch (err) {
+        olLog(`[${name}] Not ready yet (${err.message}) — retrying…`, 'lm');
+      }
+
+      await new Promise(r => setTimeout(r, retryIntervalMs));
+    }
+
+    // If getDevices() approach failed, fall back to the picker
+    if (!newDevice) {
+      olLog(`[${name}] Auto-reconnect failed — opening picker. Tap the device when it appears.`, 'lw');
+      cap.status = 'tap device in picker to reconnect'; cap.statusTone = 'working';
       renderCapList();
       try {
-        const server  = await cap.device.gatt.connect();
+        newDevice = await navigator.bluetooth.requestDevice({
+          filters: [{ name: name, services: [NUS_SERVICE] }],
+          optionalServices: [NUS_SERVICE],
+        });
+        caps.delete(cap.id);
+        cap.id     = newDevice.id;
+        cap.device = newDevice;
+        caps.set(cap.id, cap);
+        newDevice.addEventListener('gattserverdisconnected', () => onCapDisconnected(cap));
+        const server  = await newDevice.gatt.connect();
         const service = await server.getPrimaryService(NUS_SERVICE);
         cap.rxChar    = await service.getCharacteristic(NUS_RX_CHAR);
         cap.txChar    = await service.getCharacteristic(NUS_TX_CHAR);
         await cap.txChar.startNotifications();
         cap.txChar.addEventListener('characteristicvaluechanged', (e) => onNotify(cap, e));
-        olLog(`[${name}] Reconnected.`, 'lg');
-        break;
+        olLog(`[${name}] Reconnected via picker.`, 'lg');
       } catch (err) {
-        olLog(`[${name}] Reconnect attempt ${attempt}… (${err.message})`, 'lm');
-        await new Promise(r => setTimeout(r, retryIntervalMs));
-      }
-      if (Date.now() >= deadline) {
-        cap.status = 'reconnect timed out'; cap.statusTone = 'danger';
+        if (err.name === 'NotFoundError') {
+          cap.status = 'reconnect cancelled'; cap.statusTone = 'warn';
+          olLog(`[${name}] Picker cancelled — skipping re-program.`, 'lw');
+        } else {
+          cap.status = 'reconnect failed'; cap.statusTone = 'danger';
+          olLog(`[${name}] Failed: ${err.message}`, 'le');
+        }
         renderCapList();
-        olLog(`[${name}] Could not reconnect after ${maxWaitMs/1000}s.`, 'le');
         return;
       }
     }
