@@ -4,256 +4,208 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#F5F1EB">
-  <title>Pressure Mode</title>
-
+  <title>CSE Marine</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
-
   <style>
     :root {
-      --bg:        #F5F1EB;
-      --bg-card:   #FBFAF6;
-      --ink:       #1A1A19;
-      --ink-soft:  #5C5A56;
-      --ink-mute:  #94918B;
-      --line:      #E5DFD4;
-      --accent:        #1B3A78;
-      --accent-hover:  #14305F;
-      --accent-soft:   #1B3A781A;
-      --warn:    #14305F;
-      --warn-soft: #1B3A781A;
-      --warn-bg:   #1B3A781A;
-      --good:    #2A6A4A;
-      --danger:  #9B1C1C;
-      --danger-soft: #9B1C1C18;
-
-      --font-display: 'Fraunces', 'Georgia', serif;
-      --font-body:    'Geist', system-ui, sans-serif;
-      --font-mono:    'Geist Mono', ui-monospace, monospace;
-
-      --radius:    12px;
-      --radius-lg: 20px;
+      --bg:         #F5F1EB;
+      --bg-card:    #FBFAF6;
+      --ink:        #1A1A19;
+      --ink-soft:   #5C5A56;
+      --ink-mute:   #94918B;
+      --line:       #E5DFD4;
+      --accent:     #1B3A78;
+      --accent-h:   #14305F;
+      --accent-s:   #1B3A781A;
+      --good:       #2A6A4A;
+      --good-s:     #2A6A4A18;
+      --warn:       #14305F;
+      --warn-s:     #1B3A781A;
+      --danger:     #9B1C1C;
+      --danger-s:   #9B1C1C18;
+      --font-d: 'Fraunces','Georgia',serif;
+      --font-b: 'Geist',system-ui,sans-serif;
+      --font-m: 'Geist Mono',ui-monospace,monospace;
+      --r:  12px;
+      --rl: 20px;
     }
-    *, *::before, *::after { box-sizing: border-box; }
-    html, body {
-      margin: 0; padding: 0;
-      background: var(--bg); color: var(--ink);
-      font-family: var(--font-body);
-      font-size: 16px; line-height: 1.5;
-      -webkit-font-smoothing: antialiased;
-      min-height: 100vh; min-height: 100svh;
-    }
-    .app { max-width: 640px; margin: 0 auto; padding: 32px 24px 64px; }
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--font-b);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100svh}
+    .app{max-width:640px;margin:0 auto;padding:24px 20px 64px}
 
-    header { margin-bottom: 24px; text-align: center; }
-    .brand { display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .brand-logo { width: auto; max-width: 240px; max-height: 96px; display: block; }
-    @media (min-width: 640px) { .brand-logo { max-width: 280px; max-height: 112px; } }
-    .brand-text { font-family: var(--font-display); font-weight: 500; font-size: 32px; letter-spacing: -0.02em; color: var(--ink); line-height: 1; }
-    .brand-text em { font-style: italic; font-weight: 400; color: var(--accent); }
+    /* Header */
+    header{text-align:center;margin-bottom:20px}
+    .brand{display:flex;flex-direction:column;align-items:center;gap:6px}
+    .brand-logo{width:auto;max-width:220px;max-height:88px}
+    .brand-text{font-family:var(--font-d);font-weight:500;font-size:30px;letter-spacing:-.02em;color:var(--ink);line-height:1}
+    .brand-text em{font-style:italic;color:var(--accent)}
 
-    .install-banner {
-      background: var(--warn-bg); border: 1px solid var(--accent); border-radius: var(--radius);
-      padding: 14px 18px; margin: 0 0 22px; font-size: 14px; line-height: 1.55; color: var(--ink);
-    }
-    .install-banner h2 { margin: 0 0 8px; font-family: var(--font-body); font-size: 14px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; }
-    .install-banner ol { margin: 0; padding-left: 22px; }
-    .install-banner li + li { margin-top: 4px; }
-    .install-banner strong { color: var(--accent); font-weight: 600; }
+    /* Tabs */
+    .tabs{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-bottom:16px;border:1px solid var(--line);border-radius:var(--rl);overflow:hidden;background:var(--bg-card)}
+    .tab-btn{font-family:var(--font-b);font-size:14px;font-weight:500;padding:14px 8px;background:transparent;border:none;cursor:pointer;color:var(--ink-mute);transition:all .15s ease;-webkit-tap-highlight-color:transparent}
+    .tab-btn.is-active{background:var(--accent);color:var(--bg)}
 
-    section { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius-lg); padding: 22px 24px; margin-bottom: 16px; }
-    .section-label { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 14px; }
+    /* Panels */
+    .tab-panel{display:none}
+    .tab-panel.is-active{display:block}
 
-    .btn {
-      font-family: var(--font-body); font-size: 15px; font-weight: 500;
-      border-radius: var(--radius); border: 1px solid transparent; cursor: pointer;
-      transition: transform 0.08s ease, background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
-      -webkit-tap-highlight-color: transparent; padding: 12px 18px;
-    }
-    .btn:active:not(:disabled) { transform: translateY(1px); }
-    .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .btn-primary { background: var(--accent); color: var(--bg); border: 1px solid var(--accent); }
-    .btn-primary:hover:not(:disabled) { background: var(--accent-hover); border-color: var(--accent-hover); }
-    .btn-ghost { background: transparent; color: var(--ink-soft); border: 1px solid var(--line); }
-    .btn-ghost:hover:not(:disabled) { border-color: var(--ink-soft); color: var(--ink); }
-    .btn-warn { background: transparent; color: var(--warn); border: 1px solid var(--warn); }
-    .btn-warn:hover:not(:disabled) { background: var(--warn-soft); }
-    .btn-danger { background: var(--danger); color: white; border: 1px solid var(--danger); }
-    .btn-danger:hover:not(:disabled) { opacity: 0.88; }
-    .btn-block { width: 100%; padding: 14px; }
-    .btn-small { padding: 6px 12px; font-size: 13px; }
+    /* Sections */
+    section{background:var(--bg-card);border:1px solid var(--line);border-radius:var(--rl);padding:20px 22px;margin-bottom:14px}
+    .section-label{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-mute);margin-bottom:12px}
 
-    .cap-controls { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 13px; color: var(--ink-mute); }
-    .cap-controls a { color: var(--accent); text-decoration: none; cursor: pointer; font-weight: 500; }
-    .cap-controls a:hover { text-decoration: underline; }
-    .cap-controls a + a { margin-left: 10px; }
+    /* Buttons */
+    .btn{font-family:var(--font-b);font-size:15px;font-weight:500;border-radius:var(--r);border:1px solid transparent;cursor:pointer;transition:transform .08s ease,background .15s,border-color .15s,color .15s;-webkit-tap-highlight-color:transparent;padding:12px 18px}
+    .btn:active:not(:disabled){transform:translateY(1px)}
+    .btn:disabled{opacity:.4;cursor:not-allowed}
+    .btn-primary{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+    .btn-primary:hover:not(:disabled){background:var(--accent-h);border-color:var(--accent-h)}
+    .btn-ghost{background:transparent;color:var(--ink-soft);border-color:var(--line)}
+    .btn-ghost:hover:not(:disabled){border-color:var(--ink-soft);color:var(--ink)}
+    .btn-warn{background:transparent;color:var(--warn);border-color:var(--warn)}
+    .btn-warn:hover:not(:disabled){background:var(--warn-s)}
+    .btn-danger{background:var(--danger);color:#fff;border-color:var(--danger)}
+    .btn-danger:hover:not(:disabled){opacity:.88}
+    .btn-block{width:100%;padding:14px}
+    .btn-sm{padding:6px 12px;font-size:13px}
 
-    .cap-list { display: flex; flex-direction: column; gap: 8px; }
-    .cap-empty { font-size: 14px; color: var(--ink-mute); font-style: italic; padding: 8px 0; }
-    .cap-row { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; padding: 14px 16px; background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); transition: border-color 0.15s ease; }
-    .cap-row.is-selected { border-color: var(--accent); background: var(--accent-soft); }
-    .cap-checkbox { appearance: none; width: 20px; height: 20px; border: 1.5px solid var(--line); border-radius: 5px; cursor: pointer; position: relative; background: var(--bg-card); transition: all 0.15s ease; flex-shrink: 0; }
-    .cap-checkbox:checked { background: var(--accent); border-color: var(--accent); }
-    .cap-checkbox:checked::after { content: ''; position: absolute; left: 5px; top: 1px; width: 6px; height: 11px; border: solid var(--bg); border-width: 0 2px 2px 0; transform: rotate(45deg); }
-    .cap-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-    .cap-name { font-family: var(--font-mono); font-size: 14px; font-weight: 500; color: var(--ink); letter-spacing: -0.01em; word-break: break-all; overflow-wrap: anywhere; }
-    .cap-status { font-size: 12px; color: var(--ink-mute); font-variant-numeric: tabular-nums; }
-    .cap-status[data-tone="good"]    { color: var(--good); }
-    .cap-status[data-tone="warn"]    { color: var(--warn); }
-    .cap-status[data-tone="danger"]  { color: var(--danger); }
-    .cap-status[data-tone="working"] { color: var(--accent); }
-    .cap-status[data-tone="working"]::after { content: ''; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); margin-left: 6px; animation: pulse 1s ease infinite; vertical-align: middle; }
-    @keyframes pulse { 0%,100% {opacity:1;} 50% {opacity:0.3;} }
+    /* Setup banner */
+    .banner{background:var(--accent-s);border:1px solid var(--accent);border-radius:var(--r);padding:13px 16px;margin-bottom:16px;font-size:14px;line-height:1.55;color:var(--ink)}
+    .banner h2{margin:0 0 6px;font-family:var(--font-b);font-size:13px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.05em}
+    .banner ol{margin:0;padding-left:20px}
+    .banner li+li{margin-top:3px}
+    .banner strong{color:var(--accent)}
 
-    .mode-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin-bottom: 14px; }
-    @media (min-width: 480px) { .mode-grid { grid-template-columns: repeat(4, 1fr); } }
-    .mode-btn { padding: 14px 8px; background: transparent; border: 1.5px solid var(--line); border-radius: var(--radius); cursor: pointer; font-family: var(--font-body); transition: all 0.15s ease; display: flex; flex-direction: column; align-items: center; gap: 2px; -webkit-tap-highlight-color: transparent; }
-    .mode-btn:hover:not(:disabled) { border-color: var(--accent); background: var(--accent-soft); }
-    .mode-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-    .mode-btn.is-selected { background: var(--accent); border-color: var(--accent); color: var(--bg); }
-    .mode-btn-name { font-family: var(--font-display); font-weight: 500; font-size: 18px; letter-spacing: -0.01em; }
-    .mode-btn-psi { font-size: 12px; color: var(--ink-mute); }
-    .mode-btn.is-selected .mode-btn-psi { color: rgba(245, 241, 235, 0.75); }
+    /* Cap list */
+    .cap-list{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+    .cap-empty{font-size:14px;color:var(--ink-mute);font-style:italic;padding:6px 0}
+    .cap-row{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;padding:13px 15px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);transition:border-color .15s}
+    .cap-row.is-selected{border-color:var(--accent);background:var(--accent-s)}
+    .cap-checkbox{appearance:none;width:20px;height:20px;border:1.5px solid var(--line);border-radius:5px;cursor:pointer;position:relative;background:var(--bg-card);transition:all .15s;flex-shrink:0}
+    .cap-checkbox:checked{background:var(--accent);border-color:var(--accent)}
+    .cap-checkbox:checked::after{content:'';position:absolute;left:5px;top:1px;width:6px;height:11px;border:solid var(--bg);border-width:0 2px 2px 0;transform:rotate(45deg)}
+    .cap-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+    .cap-name{font-family:var(--font-m);font-size:13px;font-weight:500;color:var(--ink);word-break:break-all}
+    .cap-status{font-size:12px;color:var(--ink-mute)}
+    .cap-status[data-tone=good]{color:var(--good)}
+    .cap-status[data-tone=warn]{color:var(--warn)}
+    .cap-status[data-tone=danger]{color:var(--danger)}
+    .cap-status[data-tone=working]{color:var(--accent)}
+    .cap-status[data-tone=working]::after{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent);margin-left:5px;animation:pulse 1s ease infinite;vertical-align:middle}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .cap-controls{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:13px;color:var(--ink-mute)}
+    .cap-controls a{color:var(--accent);text-decoration:none;cursor:pointer;font-weight:500}
+    .cap-controls a+a{margin-left:10px}
 
-    .apply-row { display: grid; grid-template-columns: 2fr 1fr; gap: 10px; margin-top: 14px; }
+    /* Mode grid */
+    .mode-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+    @media(min-width:480px){.mode-grid{grid-template-columns:repeat(4,1fr)}}
+    .mode-btn{padding:13px 8px;background:transparent;border:1.5px solid var(--line);border-radius:var(--r);cursor:pointer;font-family:var(--font-b);transition:all .15s;display:flex;flex-direction:column;align-items:center;gap:2px;-webkit-tap-highlight-color:transparent}
+    .mode-btn:hover:not(:disabled){border-color:var(--accent);background:var(--accent-s)}
+    .mode-btn:disabled{opacity:.4;cursor:not-allowed}
+    .mode-btn.is-selected{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+    .mode-btn-name{font-family:var(--font-d);font-weight:500;font-size:18px;letter-spacing:-.01em}
+    .mode-btn-psi{font-size:12px;color:var(--ink-mute)}
+    .mode-btn.is-selected .mode-btn-psi{color:rgba(245,241,235,.75)}
+    .apply-row{display:grid;grid-template-columns:2fr 1fr;gap:10px;margin-top:12px}
 
-    .unsupported { background: var(--accent-soft); border: 1px solid var(--accent); color: var(--ink); padding: 14px 18px; border-radius: var(--radius); font-size: 14px; margin-bottom: 16px; line-height: 1.55; }
-    .unsupported strong { display: block; margin-bottom: 4px; color: var(--accent); }
+    /* OTA */
+    .fw-card{display:flex;align-items:center;gap:12px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:13px 15px;margin-bottom:14px}
+    .fw-card.is-good{border-color:var(--good);background:var(--good-s)}
+    .fw-card.is-error{border-color:var(--danger);background:var(--danger-s)}
+    .fw-card-icon{font-size:20px;flex-shrink:0;line-height:1}
+    .fw-card-body{flex:1;min-width:0}
+    .fw-card-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .fw-card.is-good .fw-card-title{color:var(--good)}
+    .fw-card.is-error .fw-card-title{color:var(--danger)}
+    .fw-card-meta{font-size:12px;color:var(--ink-mute);font-family:var(--font-m)}
 
-    /* ── OTA section ──────────────────────────────────────────────────────── */
-    .ota-toggle-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
-    .ota-toggle-label { font-size: 14px; color: var(--ink-soft); line-height: 1.45; }
-    .ota-toggle-label strong { color: var(--ink); font-weight: 600; display: block; margin-bottom: 2px; }
+    .ota-dropzone{border:2px dashed var(--line);border-radius:var(--r);padding:18px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;margin-bottom:14px;position:relative}
+    .ota-dropzone:hover,.ota-dropzone.drag-over{border-color:var(--accent);background:var(--accent-s)}
+    .ota-dropzone.has-file{border-color:var(--good);border-style:solid;background:var(--good-s)}
+    .ota-dropzone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+    .ota-dropzone-icon{font-size:24px;margin-bottom:4px;line-height:1}
+    .ota-dropzone-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:2px}
+    .ota-dropzone.has-file .ota-dropzone-title{color:var(--good)}
+    .ota-dropzone-sub{font-size:12px;color:var(--ink-mute)}
 
-    .toggle-switch { position: relative; display: inline-flex; align-items: center; cursor: pointer; flex-shrink: 0; margin-top: 2px; }
-    .toggle-switch input { position: absolute; opacity: 0; width: 0; height: 0; }
-    .toggle-track { width: 44px; height: 26px; background: var(--line); border-radius: 13px; transition: background 0.2s ease; flex-shrink: 0; position: relative; }
-    .toggle-switch input:checked ~ .toggle-track { background: var(--accent); }
-    .toggle-thumb { position: absolute; left: 3px; top: 3px; width: 20px; height: 20px; background: white; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.2s ease; pointer-events: none; }
-    .toggle-switch input:checked ~ .toggle-track .toggle-thumb { transform: translateX(18px); }
+    .ota-manual-details{margin-bottom:14px;font-size:13px}
+    .ota-manual-details summary{color:var(--accent);cursor:pointer;font-weight:500;padding:4px 0;user-select:none;list-style:none}
+    .ota-manual-details summary::before{content:'> '}
+    .ota-manual-details[open] summary::before{content:'v '}
 
-    .ota-config { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); display: none; }
-    .ota-config.is-visible { display: block; }
+    .progress-wrap{margin-top:12px;display:none}
+    .progress-wrap.is-visible{display:block}
+    .progress-bar{height:7px;border-radius:4px;background:var(--line);overflow:hidden;margin-bottom:5px}
+    .progress-fill{height:100%;border-radius:4px;background:var(--accent);width:0%;transition:width .35s ease}
+    .progress-fill.ind{width:35%;animation:ind 1.3s ease-in-out infinite}
+    @keyframes ind{0%{transform:translateX(-200%)}100%{transform:translateX(400%)}}
+    .progress-label{font-size:12px;color:var(--ink-mute);font-family:var(--font-m)}
+    .progress-label.good{color:var(--good)}
+    .progress-label.error{color:var(--danger)}
 
-    /* File drop zone */
-    .ota-dropzone {
-      border: 2px dashed var(--line);
-      border-radius: var(--radius);
-      padding: 20px;
-      text-align: center;
-      cursor: pointer;
-      transition: border-color 0.15s ease, background 0.15s ease;
-      margin-bottom: 14px;
-      position: relative;
-    }
-    .ota-dropzone:hover, .ota-dropzone.drag-over { border-color: var(--accent); background: var(--accent-soft); }
-    .ota-dropzone.has-file { border-color: var(--good); border-style: solid; background: #2A6A4A0D; }
-    .ota-dropzone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-    .ota-dropzone-icon { font-size: 28px; margin-bottom: 6px; line-height: 1; }
-    .ota-dropzone-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
-    .ota-dropzone-sub { font-size: 12px; color: var(--ink-mute); }
-    .ota-dropzone.has-file .ota-dropzone-title { color: var(--good); }
+    .ota-log{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:10px 13px;font-family:var(--font-m);font-size:11.5px;line-height:1.65;color:var(--ink-soft);max-height:180px;overflow-y:auto;margin-top:12px;display:none}
+    .ota-log.is-visible{display:block}
+    .ota-log p{margin:0}
+    .ota-log .lg{color:var(--good)}
+    .ota-log .lw{color:#8B6914}
+    .ota-log .le{color:var(--danger)}
+    .ota-log .lm{color:var(--ink-mute)}
 
-    /* Progress */
-    .ota-progress-wrap { margin-top: 14px; display: none; }
-    .ota-progress-wrap.is-visible { display: block; }
-    .ota-progress-bar { height: 8px; border-radius: 4px; background: var(--line); overflow: hidden; margin-bottom: 6px; }
-    .ota-progress-fill { height: 100%; border-radius: 4px; background: var(--accent); width: 0%; transition: width 0.4s ease; }
-    .ota-progress-fill.indeterminate { width: 35%; animation: slide-ind 1.3s ease-in-out infinite; }
-    @keyframes slide-ind { 0% { transform: translateX(-200%); } 100% { transform: translateX(400%); } }
-    .ota-progress-label { font-size: 12px; color: var(--ink-mute); font-family: var(--font-mono); }
-    .ota-progress-label.good { color: var(--good); }
-    .ota-progress-label.error { color: var(--danger); }
-
-    /* Log */
-    .ota-log { background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius); padding: 10px 14px; font-family: var(--font-mono); font-size: 11.5px; line-height: 1.65; color: var(--ink-soft); max-height: 200px; overflow-y: auto; margin-top: 12px; display: none; }
-    .ota-log.is-visible { display: block; }
-    .ota-log p { margin: 0; }
-    .ota-log .lg { color: var(--good); }
-    .ota-log .lw { color: #8B6914; }
-    .ota-log .le { color: var(--danger); }
-    .ota-log .lm { color: var(--ink-mute); }
-
-    /* OTA button */
-    .ota-btn-row { margin-top: 14px; }
-
-    /* Firmware status card */
-    .fw-card {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--bg);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      padding: 14px 16px;
-      margin-bottom: 14px;
-    }
-    .fw-card.is-good  { border-color: var(--good);   background: #2A6A4A0D; }
-    .fw-card.is-error { border-color: var(--danger);  background: var(--danger-soft); }
-    .fw-card-icon { font-size: 22px; flex-shrink: 0; line-height: 1; }
-    .fw-card-body { flex: 1; min-width: 0; }
-    .fw-card-title { font-size: 14px; font-weight: 600; color: var(--ink); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .fw-card.is-good  .fw-card-title { color: var(--good); }
-    .fw-card.is-error .fw-card-title { color: var(--danger); }
-    .fw-card-meta { font-size: 12px; color: var(--ink-mute); font-family: var(--font-mono); }
-
-    /* Manual override collapsible */
-    .ota-manual-details {
-      margin-bottom: 14px;
-      font-size: 13px;
-    }
-    .ota-manual-details summary {
-      color: var(--accent);
-      cursor: pointer;
-      font-weight: 500;
-      padding: 4px 0;
-      user-select: none;
-      list-style: none;
-    }
-    .ota-manual-details summary::before { content: '▸ '; font-size: 11px; }
-    .ota-manual-details[open] summary::before { content: '▾ '; }
+    .unsupported{background:var(--accent-s);border:1px solid var(--accent);color:var(--ink);padding:13px 16px;border-radius:var(--r);font-size:14px;margin-bottom:14px;line-height:1.55}
+    .unsupported strong{display:block;margin-bottom:3px;color:var(--accent)}
   </style>
 </head>
 <body>
-  <main class="app">
+<main class="app">
 
-    <header>
-      <div class="brand">
-        <img class="brand-logo" src="logo.png" alt="CSE Marine"
-             onerror="this.style.display='none'; document.getElementById('brandText').style.display='inline-block';">
-        <span class="brand-text" id="brandText" style="display: none;">CSE <em>Marine</em></span>
-      </div>
-    </header>
+  <header>
+    <div class="brand">
+      <img class="brand-logo" src="logo.png" alt="CSE Marine"
+           onerror="this.style.display='none';document.getElementById('brandText').style.display='block'">
+      <span class="brand-text" id="brandText" style="display:none">CSE <em>Marine</em></span>
+    </div>
+  </header>
 
-    <div class="install-banner">
+  <div class="unsupported" id="unsupportedBanner" style="display:none">
+    <strong>Web Bluetooth not supported.</strong>
+    Open in Chrome or Edge on Mac, Windows, or Android.
+  </div>
+
+  <!-- Tab switcher -->
+  <div class="tabs">
+    <button class="tab-btn is-active" data-tab="pressure">Pressure Mode</button>
+    <button class="tab-btn" data-tab="ota">Firmware Update</button>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════
+       TAB 1: PRESSURE MODE
+       Completely independent BLE session from OTA.
+       Connect caps, pick a mode, program them.
+       ════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel is-active" id="tab-pressure">
+
+    <div class="banner">
       <h2>Setup</h2>
       <ol>
-        <li>Install the caps in the boat.<br><strong>This will start a 10 minute pairing window.</strong></li>
-        <li>Tap <strong>Find caps</strong>, select the cap to pair, and it joins the list below. Tap it again to pair the next one.</li>
+        <li>Install caps in the boat. <strong>This starts a 10-minute pairing window.</strong></li>
+        <li>Tap <strong>Find caps</strong>, select a cap, repeat for each one.</li>
       </ol>
-    </div>
-
-    <div class="unsupported" id="unsupportedBanner" style="display: none;">
-      <strong>Your browser doesn't support Web Bluetooth.</strong>
-      Open this page in Chrome or Edge on a Mac, Windows PC, or Android device.
     </div>
 
     <section>
       <div class="section-label">Caps</div>
-      <button class="btn btn-primary" id="btnFindCaps">+ Find caps</button>
-      <div class="cap-list" id="capList" style="margin-top: 16px;"></div>
-      <div class="cap-controls" id="capControls" style="display: none;">
-        <div>
-          <a id="selectAll">Select all</a>
-          <a id="selectNone">Select none</a>
-        </div>
-        <span id="selectedCount"></span>
+      <button class="btn btn-primary" id="p-findBtn">+ Find caps</button>
+      <div class="cap-list" id="p-capList"></div>
+      <div class="cap-controls" id="p-capControls" style="display:none">
+        <div><a id="p-selectAll">Select all</a><a id="p-selectNone">Select none</a></div>
+        <span id="p-selectedCount"></span>
       </div>
     </section>
 
     <section>
-      <div class="section-label">Target mode (applies to selected caps above)</div>
+      <div class="section-label">Target mode</div>
       <div class="mode-grid">
         <button class="mode-btn" data-level="1"><span class="mode-btn-name">Mode 1</span><span class="mode-btn-psi">2.0 PSI</span></button>
         <button class="mode-btn" data-level="2"><span class="mode-btn-name">Mode 2</span><span class="mode-btn-psi">2.5 PSI</span></button>
@@ -261,1004 +213,652 @@
         <button class="mode-btn" data-level="4"><span class="mode-btn-name">Mode 4</span><span class="mode-btn-psi">3.5 PSI</span></button>
       </div>
       <div class="apply-row">
-        <button class="btn btn-primary btn-block" id="btnProgram" disabled>Program</button>
-        <button class="btn btn-warn btn-block" id="btnQuit" disabled>Quit</button>
+        <button class="btn btn-primary btn-block" id="p-programBtn" disabled>Program</button>
+        <button class="btn btn-warn btn-block" id="p-quitBtn" disabled>Quit</button>
       </div>
     </section>
 
-    <!-- OTA section -->
-    <section id="otaSection">
-      <div class="section-label">Firmware update (OTA)</div>
+  </div><!-- /tab-pressure -->
 
-      <div class="ota-toggle-row">
-        <div class="ota-toggle-label">
-          <strong>Push firmware after programming</strong>
-          Fetches the latest release from GitHub and flashes it to each cap after the pressure mode is set.
+  <!-- ════════════════════════════════════════════════════════════
+       TAB 2: FIRMWARE UPDATE (OTA)
+       Entirely separate BLE session.
+       1. Load firmware (auto from GitHub or local file)
+       2. Find cap, connect
+       3. Flash via MDFU
+       4. Done — cap reboots, go to Pressure Mode tab to reprogram
+       ════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-ota">
+
+    <section>
+      <div class="section-label">Firmware image</div>
+
+      <div class="fw-card" id="fw-card">
+        <div class="fw-card-icon" id="fw-icon">⏳</div>
+        <div class="fw-card-body">
+          <div class="fw-card-title" id="fw-title">No firmware loaded</div>
+          <div class="fw-card-meta" id="fw-meta"></div>
         </div>
-        <label class="toggle-switch">
-          <input type="checkbox" id="otaToggle">
-          <div class="toggle-track"><div class="toggle-thumb"></div></div>
-        </label>
+        <button class="btn btn-ghost btn-sm" id="fw-refetchBtn" style="display:none">Refresh</button>
       </div>
 
-      <div class="ota-config" id="otaConfig">
-
-        <!-- Firmware status card — shown once image is fetched or loaded -->
-        <div class="fw-card" id="fwCard">
-          <div class="fw-card-icon" id="fwCardIcon">⏳</div>
-          <div class="fw-card-body">
-            <div class="fw-card-title" id="fwCardTitle">Checking for firmware…</div>
-            <div class="fw-card-meta" id="fwCardMeta"></div>
-          </div>
-          <button class="btn btn-ghost btn-small" id="btnRefetch">Refresh</button>
+      <details class="ota-manual-details">
+        <summary>Load a local file instead</summary>
+        <div class="ota-dropzone" id="ota-dropzone" style="margin-top:10px">
+          <input type="file" id="ota-fileInput" accept=".img">
+          <div class="ota-dropzone-icon" id="ota-dropIcon">📦</div>
+          <div class="ota-dropzone-title" id="ota-dropTitle">Drop .img here or tap to choose</div>
+          <div class="ota-dropzone-sub">Overrides the auto-fetched firmware</div>
         </div>
-
-        <!-- Manual override: drop / pick a local file -->
-        <details class="ota-manual-details" id="otaManualDetails">
-          <summary>Use a local file instead</summary>
-          <div class="ota-dropzone" id="otaDropzone" style="margin-top:10px;">
-            <input type="file" id="otaFileInput" accept=".img">
-            <div class="ota-dropzone-icon" id="otaDropIcon">📦</div>
-            <div class="ota-dropzone-title" id="otaDropTitle">Drop .img here or tap to choose</div>
-            <div class="ota-dropzone-sub" id="otaDropSub">Overrides the auto-fetched release</div>
-          </div>
-        </details>
-
-        <div class="ota-btn-row">
-          <button class="btn btn-danger btn-block" id="btnOtaOnly" disabled>
-            Flash firmware now (selected caps, no mode change)
-          </button>
-        </div>
-
-        <div class="ota-progress-wrap" id="otaProgressWrap">
-          <div class="ota-progress-bar"><div class="ota-progress-fill" id="otaProgressFill"></div></div>
-          <div class="ota-progress-label" id="otaProgressLabel"></div>
-        </div>
-
-        <div class="ota-log" id="otaLog"></div>
-      </div>
+      </details>
     </section>
 
-  </main>
+    <section>
+      <div class="section-label">Cap</div>
+      <button class="btn btn-primary" id="o-findBtn">+ Find cap to flash</button>
+      <div class="cap-list" id="o-capList"></div>
+    </section>
 
-  <script>
-  /* ===========================================================================
-   *  CSE Marine — Pressure Mode + full BLE OTA (no pymdfu required)
-   *
-   * ── GITHUB FIRMWARE CONFIG ─────────────────────────────────────────────────
-   *  Set these to your repo. The page fetches the latest GitHub Release and
-   *  downloads the first .img asset automatically on page load.
-   *
-   *  GITHUB_REPO   "owner/repo"   e.g. "CSEMarine/cap-firmware"
-   *  GITHUB_ASSET  filename of the .img asset in the release, or null to use
-   *                the first .img asset found in the release.
-   * ─────────────────────────────────────────────────────────────────────────*/
-  // FIRMWARE CONFIG — update this URL when there is new firmware.
-  // Format: the direct release download URL wrapped in corsproxy.io.
-  // FIRMWARE CONFIG — update the branch/filename when there is new firmware.
-  const FIRMWARE_URL = 'https://raw.githubusercontent.com/ellehyry/Cse-marine-pressure/main/NS_application_OTA_v3.2.img';
+    <section>
+      <button class="btn btn-danger btn-block" id="o-flashBtn" disabled>Flash firmware</button>
+      <p style="margin:8px 0 0;font-size:12px;color:var(--ink-mute);line-height:1.5">
+        The cap will be flashed and reboot. After it comes back up, switch to
+        the <strong>Pressure Mode</strong> tab to reconnect and program the mode.
+      </p>
 
-  /* ── Wire format / MDFU protocol (unchanged — see block comment below) ── */
-  /*
-   *  Pressure mode wire format:
-   *    'p' + ASCII digit  -> set pressure level (1-4)
-   *    Success: 'P' + digit + CRLF    Reject: 'E' + CRLF
-   *
-   *  OTA wire format — MDFU protocol over BLE NUS (mirrors pymdfu internals):
-   *
-   *    UART transport framing  (uart_transport.py):
-   *      Frame = 0x56 + escape(MDFU_packet + CRC16_LE) + 0x9E
-   *      Escape: 0x56→[CC,A9]  0x9E→[CC,61]  0xCC→[CC,33]
-   *      CRC = 16-bit two's-complement sum of LE uint16 words (utils.py)
-   *
-   *    MDFU packet  (mdfu.py):
-   *      CMD:    [seq_field, cmd_byte, ...data]
-   *              seq_field = seq_num | (0x80 if sync)
-   *      STATUS: [seq_field, status_byte, ...data]
-   *              seq_field = seq_num | (0x40 if resend)
-   *
-   *    Commands (MdfuCmd):
-   *      1 GET_CLIENT_INFO   2 START_TRANSFER
-   *      3 WRITE_CHUNK       4 GET_IMAGE_STATE
-   *      5 END_TRANSFER
-   *
-   *    Status (MdfuStatus):
-   *      1 SUCCESS  2 CMD_NOT_SUPPORTED  3 NOT_AUTHORIZED
-   *      4 CMD_NOT_EXECUTED  5 ABORT_FILE_TRANSFER
-   *
-   *  OTA sequence:
-   *    1. Send 'b' primer (primes BLE link, avoids first-byte drop)
-   *    2. Send 'O' trigger (PIC → bootloader DFU mode, BLE link stays up)
-   *    3. Run MDFU session: GET_CLIENT_INFO → START_TRANSFER → WRITE_CHUNKs
-   *       → GET_IMAGE_STATE → END_TRANSFER
-   * =========================================================================*/
+      <div class="progress-wrap" id="o-progressWrap">
+        <div class="progress-bar"><div class="progress-fill" id="o-progressFill"></div></div>
+        <div class="progress-label" id="o-progressLabel"></div>
+      </div>
 
-  const NUS_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
-  const NUS_RX_CHAR = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
-  const NUS_TX_CHAR = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
+      <div class="ota-log" id="o-log"></div>
+    </section>
 
-  const MODE_LABELS = {
-    1: { name: 'Mode 1', psi: '2.0' },
-    2: { name: 'Mode 2', psi: '2.5' },
-    3: { name: 'Mode 3', psi: '3.0' },
-    4: { name: 'Mode 4', psi: '3.5' },
-  };
+  </div><!-- /tab-ota -->
 
-  const caps = new Map();
-  let selectedLevel = null;
-  let otaEnabled = false;
-  let otaImageBytes = null;   // Uint8Array of the .img file
+</main>
+<script>
+/* ===========================================================================
+ * CSE Marine — Pressure Mode + Firmware Update (OTA)
+ *
+ * Two completely independent BLE sessions:
+ *   Tab 1 (Pressure Mode): connect caps, program mode 1-4
+ *   Tab 2 (Firmware Update): connect one cap, flash via MDFU, done
+ *
+ * FIRMWARE CONFIG — update URL when there is new firmware.
+ * ========================================================================= */
+const FIRMWARE_URL = 'https://raw.githubusercontent.com/ellehyry/Cse-marine-pressure/main/NS_application_OTA_v3.2.img';
 
-  const el = {
-    findBtn:      document.getElementById('btnFindCaps'),
-    programBtn:   document.getElementById('btnProgram'),
-    quitBtn:      document.getElementById('btnQuit'),
-    capList:      document.getElementById('capList'),
-    capControls:  document.getElementById('capControls'),
-    selectAll:    document.getElementById('selectAll'),
-    selectNone:   document.getElementById('selectNone'),
-    selectedCount:document.getElementById('selectedCount'),
-    modeBtns:     document.querySelectorAll('.mode-btn'),
-    unsupported:  document.getElementById('unsupportedBanner'),
-    otaToggle:    document.getElementById('otaToggle'),
-    otaConfig:    document.getElementById('otaConfig'),
-    otaDropzone:  document.getElementById('otaDropzone'),
-    otaFileInput: document.getElementById('otaFileInput'),
-    otaDropIcon:  document.getElementById('otaDropIcon'),
-    otaDropTitle: document.getElementById('otaDropTitle'),
-    otaDropSub:   document.getElementById('otaDropSub'),
-    btnOtaOnly:   document.getElementById('btnOtaOnly'),
-    progressWrap: document.getElementById('otaProgressWrap'),
-    progressFill: document.getElementById('otaProgressFill'),
-    progressLabel:document.getElementById('otaProgressLabel'),
-    otaLog:       document.getElementById('otaLog'),
-    fwCard:       document.getElementById('fwCard'),
-    fwCardIcon:   document.getElementById('fwCardIcon'),
-    fwCardTitle:  document.getElementById('fwCardTitle'),
-    fwCardMeta:   document.getElementById('fwCardMeta'),
-    btnRefetch:   document.getElementById('btnRefetch'),
-  };
+const NUS_SERVICE = '6e400001-b5a3-f393-e0a9-e50e24dcca9e';
+const NUS_RX     = '6e400002-b5a3-f393-e0a9-e50e24dcca9e';
+const NUS_TX     = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 
-  if (!navigator.bluetooth) {
-    el.unsupported.style.display = 'block';
-    el.findBtn.disabled = true;
+const MODE_LABELS = {
+  1:{name:'Mode 1',psi:'2.0'},2:{name:'Mode 2',psi:'2.5'},
+  3:{name:'Mode 3',psi:'3.0'},4:{name:'Mode 4',psi:'3.5'},
+};
+
+if (!navigator.bluetooth) {
+  document.getElementById('unsupportedBanner').style.display = 'block';
+}
+
+/* ── Tabs ──────────────────────────────────────────────────────────────── */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('is-active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('is-active'));
+    btn.classList.add('is-active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('is-active');
+  });
+});
+
+/* ── Shared BLE helpers ────────────────────────────────────────────────── */
+async function bleWrite(char, bytes) {
+  if (typeof char.writeValueWithResponse === 'function') return char.writeValueWithResponse(bytes);
+  return char.writeValue(bytes);
+}
+
+async function bleConnect(device) {
+  const server  = await device.gatt.connect();
+  const service = await server.getPrimaryService(NUS_SERVICE);
+  const rx = await service.getCharacteristic(NUS_RX);
+  const tx = await service.getCharacteristic(NUS_TX);
+  await tx.startNotifications();
+  return { rx, tx };
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * TAB 1: PRESSURE MODE
+ * ═══════════════════════════════════════════════════════════════════════════ */
+const pCaps = new Map();
+let pSelectedLevel = null;
+
+const pe = {
+  findBtn:      document.getElementById('p-findBtn'),
+  programBtn:   document.getElementById('p-programBtn'),
+  quitBtn:      document.getElementById('p-quitBtn'),
+  capList:      document.getElementById('p-capList'),
+  capControls:  document.getElementById('p-capControls'),
+  selectAll:    document.getElementById('p-selectAll'),
+  selectNone:   document.getElementById('p-selectNone'),
+  selectedCount:document.getElementById('p-selectedCount'),
+  modeBtns:     document.querySelectorAll('.mode-btn'),
+};
+
+function pRender() {
+  const list = Array.from(pCaps.values());
+  if (!list.length) {
+    pe.capList.innerHTML = '<div class="cap-empty">No caps yet.</div>';
+    pe.capControls.style.display = 'none';
+    pUpdateControls(); return;
   }
-
-  // ══════════════════════════════════════════════════════════════════════════
-  //  MDFU protocol implementation
-  // ══════════════════════════════════════════════════════════════════════════
-
-  const MDFU = {
-    FRAME_START: 0x56,
-    FRAME_END:   0x9E,
-    ESCAPE:      0xCC,
-
-    CMD: { GET_CLIENT_INFO: 1, START_TRANSFER: 2, WRITE_CHUNK: 3, GET_IMAGE_STATE: 4, END_TRANSFER: 5 },
-    STATUS: { SUCCESS: 1, CMD_NOT_SUPPORTED: 2, NOT_AUTHORIZED: 3, CMD_NOT_EXECUTED: 4, ABORT_FILE_TRANSFER: 5 },
-
-    /** 16-bit two's-complement sum of LE uint16 words (mirrors pymdfu utils.py) */
-    checksum(data) {
-      let sum = 0;
-      const padded = (data.length % 2) ? new Uint8Array([...data, 0]) : data;
-      for (let i = 0; i < padded.length; i += 2) {
-        sum += (padded[i + 1] << 8) | padded[i];
-      }
-      return (~sum) & 0xffff;
-    },
-
-    /** Escape reserved bytes inside a frame payload */
-    escapePayload(data) {
-      const out = [];
-      for (const b of data) {
-        if      (b === 0x56) { out.push(0xCC, 0xA9); }
-        else if (b === 0x9E) { out.push(0xCC, 0x61); }
-        else if (b === 0xCC) { out.push(0xCC, 0x33); }
-        else                  { out.push(b); }
-      }
-      return new Uint8Array(out);
-    },
-
-    /** Unescape a frame payload */
-    unescapePayload(data) {
-      const out = [];
-      let esc = false;
-      for (const b of data) {
-        if (esc) {
-          if      (b === 0xA9) out.push(0x56);
-          else if (b === 0x61) out.push(0x9E);
-          else if (b === 0x33) out.push(0xCC);
-          else throw new Error(`Unknown escape sequence CC ${b.toString(16)}`);
-          esc = false;
-        } else if (b === 0xCC) {
-          esc = true;
-        } else {
-          out.push(b);
-        }
-      }
-      return new Uint8Array(out);
-    },
-
-    /** Build a UART transport frame around an MDFU packet */
-    buildFrame(packet) {
-      const crc = this.checksum(packet);
-      const payload = new Uint8Array([...packet, crc & 0xff, (crc >> 8) & 0xff]);
-      const escaped = this.escapePayload(payload);
-      return new Uint8Array([this.FRAME_START, ...escaped, this.FRAME_END]);
-    },
-
-    /** Parse a complete frame back to the MDFU packet bytes */
-    parseFrame(frame) {
-      if (frame[0] !== this.FRAME_START) throw new Error('Bad frame start');
-      if (frame[frame.length - 1] !== this.FRAME_END) throw new Error('Bad frame end');
-      const payload = this.unescapePayload(frame.slice(1, -1));
-      const data    = payload.slice(0, -2);
-      const rxCrc   = payload[payload.length - 2] | (payload[payload.length - 1] << 8);
-      const calcCrc = this.checksum(data);
-      if (rxCrc !== calcCrc) throw new Error(`CRC mismatch: got ${rxCrc.toString(16)} expected ${calcCrc.toString(16)}`);
-      return data; // MDFU status packet bytes
-    },
-
-    /** Build an MDFU command packet binary */
-    buildCmdPacket(seqNum, cmd, data = new Uint8Array(), sync = false) {
-      const seqField = seqNum | (sync ? 0x80 : 0x00);
-      return new Uint8Array([seqField, cmd, ...data]);
-    },
-
-    /** Parse an MDFU status packet */
-    parseStatusPacket(bytes) {
-      const seqField = bytes[0];
-      return {
-        seqNum: seqField & 0x1f,
-        resend: !!(seqField & 0x40),
-        status: bytes[1],
-        data:   bytes.slice(2),
-      };
-    },
-  };
-
-  // ══════════════════════════════════════════════════════════════════════════
-  //  BLE receive buffer — accumulates NUS notifications into frames
-  // ══════════════════════════════════════════════════════════════════════════
-
-  class BleFrameReceiver {
-    constructor() {
-      this._buf = [];
-      this._resolve = null;
-      this._reject  = null;
-      this._timer   = null;
-    }
-
-    /** Feed incoming BLE notification bytes into the accumulator */
-    feed(bytes) {
-      for (const b of bytes) this._buf.push(b);
-      this._tryDispatch();
-    }
-
-    /** Returns a Promise that resolves with the next complete MDFU frame */
-    nextFrame(timeoutMs = 8000) {
-      return new Promise((resolve, reject) => {
-        this._resolve = resolve;
-        this._reject  = reject;
-        this._timer   = setTimeout(() => {
-          this._resolve = null;
-          this._reject  = null;
-          reject(new Error(`Frame timeout after ${timeoutMs} ms. Buffer: ${this._buf.map(b=>b.toString(16).padStart(2,'0')).join(' ')}`));
-        }, timeoutMs);
-        this._tryDispatch();
-      });
-    }
-
-    _tryDispatch() {
-      if (!this._resolve) return;
-      // Look for a complete frame: starts with 0x56, ends with 0x9E
-      // (escaped 0x9E inside will be preceded by 0xCC so won't match end)
-      const start = this._buf.indexOf(MDFU.FRAME_START);
-      if (start === -1) return;
-      // Scan for end byte that is NOT preceded by the escape byte
-      for (let i = start + 1; i < this._buf.length; i++) {
-        if (this._buf[i] === MDFU.FRAME_END && this._buf[i - 1] !== MDFU.ESCAPE) {
-          const frame = new Uint8Array(this._buf.splice(0, i + 1));
-          clearTimeout(this._timer);
-          const res = this._resolve;
-          this._resolve = null;
-          this._reject  = null;
-          res(frame);
-          return;
-        }
-      }
-    }
-
-    reset() { this._buf = []; }
+  pe.capList.innerHTML = '';
+  for (const cap of list) {
+    const row = document.createElement('label');
+    row.className = 'cap-row' + (cap.selected ? ' is-selected' : '');
+    row.innerHTML = `
+      <input type="checkbox" class="cap-checkbox" data-id="${cap.id}"${cap.selected?' checked':''}>
+      <div class="cap-info"><span class="cap-name"></span><span class="cap-status"></span></div>
+      <button class="btn btn-ghost btn-sm" data-remove="${cap.id}">Remove</button>`;
+    row.querySelector('.cap-name').textContent = cap.name;
+    const s = row.querySelector('.cap-status');
+    s.textContent = cap.status;
+    if (cap.tone) s.setAttribute('data-tone', cap.tone);
+    pe.capList.appendChild(row);
   }
+  pe.capList.querySelectorAll('.cap-checkbox').forEach(cb =>
+    cb.addEventListener('change', () => { const c=pCaps.get(cb.dataset.id); if(c){c.selected=cb.checked;pRender();} }));
+  pe.capList.querySelectorAll('[data-remove]').forEach(btn =>
+    btn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); pRemove(btn.dataset.remove); }));
+  pe.capControls.style.display = 'flex';
+  const sel = list.filter(c=>c.selected).length;
+  pe.selectedCount.textContent = `${sel} of ${list.length} selected`;
+  pUpdateControls();
+}
 
-  // ══════════════════════════════════════════════════════════════════════════
-  //  MDFU session runner — executes the full upgrade over a BLE cap object
-  // ══════════════════════════════════════════════════════════════════════════
-
-  async function runMdfuUpgrade(cap, imageBytes, onProgress) {
-    const receiver = new BleFrameReceiver();
-
-    // Redirect BLE notifications to our frame receiver during OTA
-    const mdfuNotifyHandler = (e) => {
-      const v = e.target.value;
-      receiver.feed(new Uint8Array(v.buffer, v.byteOffset, v.byteLength));
-    };
-    cap.txChar.addEventListener('characteristicvaluechanged', mdfuNotifyHandler);
-
-    // Send an MDFU command frame and wait for the status frame back
-    let seqNum = 0;
-    const RETRIES = 5;
-
-    async function sendCmd(cmd, data = new Uint8Array(), sync = false, timeoutMs = 10000) {
-      for (let attempt = 0; attempt <= RETRIES; attempt++) {
-        const packet = MDFU.buildCmdPacket(seqNum, cmd, data, sync);
-        const frame  = MDFU.buildFrame(packet);
-
-        // BLE NUS RX characteristic has a max write size; chunk at 20 bytes
-        // (the MTU may be higher — use writeValueWithoutResponse for >20B chunks
-        // if the peer's MTU allows it; we'll be conservative with 20 B here).
-        // Most firmware images are split across many WRITE_CHUNK commands anyway.
-        for (let off = 0; off < frame.length; off += 20) {
-          const slice = frame.slice(off, off + 20);
-          await bleWrite(cap.rxChar, slice);
-        }
-
-        let statusPacket;
-        try {
-          const statusFrame = await receiver.nextFrame(timeoutMs);
-          const statusBytes = MDFU.parseFrame(statusFrame);
-          statusPacket = MDFU.parseStatusPacket(statusBytes);
-        } catch (e) {
-          if (attempt < RETRIES) { olLog(`  [retry ${attempt+1}] ${e.message}`, 'lw'); continue; }
-          throw e;
-        }
-
-        if (statusPacket.resend) {
-          olLog(`  resend requested (seq ${statusPacket.seqNum})`, 'lw');
-          if (attempt < RETRIES) continue;
-          throw new Error('Too many resend requests');
-        }
-        if (statusPacket.status !== MDFU.STATUS.SUCCESS) {
-          throw new Error(`MDFU error status ${statusPacket.status} on cmd ${cmd}`);
-        }
-        seqNum = (seqNum + 1) & 0x1f;
-        return statusPacket;
-      }
-    }
-
-    try {
-      // ── GET_CLIENT_INFO (sync=true resets seq on PIC side) ──
-      olLog('MDFU: GET_CLIENT_INFO…');
-      const infoResp = await sendCmd(MDFU.CMD.GET_CLIENT_INFO, new Uint8Array(), true, 5000);
-
-      // Parse buffer_size from client info TLV (type=2, length=3, [size_lo, size_hi, count])
-      let bufSize = 64; // safe default
-      const info = infoResp.data;
-      for (let i = 0; i < info.length; ) {
-        const t = info[i], l = info[i+1];
-        if (t === 2 && l >= 2) { bufSize = info[i+2] | (info[i+3] << 8); }
-        i += 2 + l;
-      }
-      olLog(`  buffer size: ${bufSize} bytes`, 'lm');
-
-      // ── START_TRANSFER ──
-      olLog('MDFU: START_TRANSFER…');
-      await sendCmd(MDFU.CMD.START_TRANSFER, new Uint8Array(), false, 5000);
-
-      // ── WRITE_CHUNKs ──
-      const totalChunks = Math.ceil(imageBytes.length / bufSize);
-      olLog(`MDFU: writing ${totalChunks} chunks (${imageBytes.length} bytes)…`);
-      for (let i = 0; i < imageBytes.length; i += bufSize) {
-        const chunk = imageBytes.slice(i, i + bufSize);
-        await sendCmd(MDFU.CMD.WRITE_CHUNK, chunk, false, 15000);
-        const pct = Math.round(((i + bufSize) / imageBytes.length) * 100);
-        onProgress(Math.min(pct, 99));
-      }
-
-      // ── GET_IMAGE_STATE ──
-      olLog('MDFU: GET_IMAGE_STATE…');
-      const stateResp = await sendCmd(MDFU.CMD.GET_IMAGE_STATE, new Uint8Array(), false, 10000);
-      const imageState = stateResp.data[0]; // 1=VALID, 2=INVALID
-      if (imageState !== 1) throw new Error(`Image invalid after transfer (state=${imageState})`);
-      olLog('  image state: VALID ✓', 'lg');
-
-      // ── END_TRANSFER ──
-      olLog('MDFU: END_TRANSFER…');
-      await sendCmd(MDFU.CMD.END_TRANSFER, new Uint8Array(), false, 10000);
-
-      onProgress(100);
-      olLog('OTA complete! Cap is rebooting.', 'lg');
-
-    } finally {
-      cap.txChar.removeEventListener('characteristicvaluechanged', mdfuNotifyHandler);
-    }
+function pUpdateControls() {
+  const list = Array.from(pCaps.values());
+  const selConn = list.filter(c=>c.selected&&c.rx).length;
+  pe.programBtn.disabled = !(selConn > 0 && pSelectedLevel !== null);
+  pe.quitBtn.disabled = list.length === 0;
+  if (pSelectedLevel && selConn > 0) {
+    const m = MODE_LABELS[pSelectedLevel];
+    pe.programBtn.textContent = `Program ${m.name} to ${selConn} cap${selConn===1?'':'s'}`;
+  } else {
+    pe.programBtn.textContent = 'Program';
   }
+}
 
-  // ══════════════════════════════════════════════════════════════════════════
-  //  OTA high-level flow: primer → trigger → MDFU session
-
-  async function otaOneCap(cap, imageBytes) {
-    const name = cap.name;
-
-    // ── 1. Primer 'b' — ensures the BLE link is hot before 'O' ──
-    cap.status = 'OTA: priming…'; cap.statusTone = 'working'; renderCapList();
-    olLog(`[${name}] Sending primer 'b'…`);
-
-    const primer = await sendAndWait(cap, new Uint8Array([0x62]), 2000);
-    if (primer) {
-      olLog(`[${name}] Link hot (ack: ${new TextDecoder().decode(primer).trim()})`, 'lg');
-    } else {
-      olLog(`[${name}] No primer ack — proceeding`, 'lw');
-    }
-
-    // ── 2. OTA trigger 'O' — PIC reboots into MDFU bootloader ──
-    cap.status = 'OTA: triggering bootloader…'; cap.statusTone = 'working'; renderCapList();
-    olLog(`[${name}] Sending OTA trigger 'O'…`);
-
-    // Disconnect old notify handler so the frame receiver can take over cleanly
-    // (we keep the existing txChar notification subscription active — just
-    // swap the listener inside runMdfuUpgrade).
-    try {
-      await bleWrite(cap.rxChar, new Uint8Array([0x4F]));
-    } catch (e) {
-      // Ignore — PIC may reboot so fast the write ACK is lost
-    }
-
-    // Wait for PIC to enter bootloader (LED flash + erase + reset ≈ 1.5-2 s)
-    cap.status = 'OTA: bootloader starting…'; cap.statusTone = 'working'; renderCapList();
-    olLog(`[${name}] Waiting for bootloader (1.5 s)…`, 'lm');
-    await new Promise(r => setTimeout(r, 1500));
-
-    // ── 3. Run MDFU upgrade ──
-    cap.status = 'OTA: flashing…'; cap.statusTone = 'working'; renderCapList();
-    olLog(`[${name}] Starting MDFU session…`);
-
-    await runMdfuUpgrade(cap, imageBytes, (pct) => {
-      setProgress(pct, `Flashing ${name}… ${pct}%`);
-      cap.status = `OTA: ${pct}%`; cap.statusTone = 'working';
-      renderCapList();
+async function pFind() {
+  try {
+    const device = await navigator.bluetooth.requestDevice({
+      filters: [{ services: [NUS_SERVICE] }],
+      optionalServices: [NUS_SERVICE],
     });
-
-    // Cap is rebooting into new firmware.
-    cap.rxChar = null;
-    cap.txChar = null;
-    try { cap.device.gatt.disconnect(); } catch(e) {}
-    cap.status = 'OTA complete — reconnecting…'; cap.statusTone = 'working';
-    renderCapList();
-    olLog(`[${name}] Flash done. Waiting for cap to reboot…`, 'lm');
-
-    // ── 4. Reconnect ──
-    // The BC805M calls bt_le_adv_start() on_disconnected so it re-advertises
-    // after the reboot. Retry gatt.connect() — no picker needed since the
-    // browser already has the device paired.
-    await reconnectAndReprogram(cap);
+    if (pCaps.has(device.id)) return;
+    const cap = { id:device.id, name:device.name||'(unnamed)', device,
+                  rx:null, tx:null, pending:null,
+                  selected:true, status:'connecting…', tone:'working' };
+    pCaps.set(device.id, cap);
+    pRender();
+    device.addEventListener('gattserverdisconnected', () => {
+      cap.rx=null; cap.tx=null; cap.status='connection lost'; cap.tone='warn'; pRender();
+    });
+    const { rx, tx } = await bleConnect(device);
+    cap.rx=rx; cap.tx=tx;
+    tx.addEventListener('characteristicvaluechanged', e => {
+      const b = new Uint8Array(e.target.value.buffer, e.target.value.byteOffset, e.target.value.byteLength);
+      if (cap.pending) { const r=cap.pending; cap.pending=null; r(b); }
+    });
+    cap.status='connected'; cap.tone='good'; pRender();
+  } catch(err) {
+    if (err.name==='NotFoundError') return;
+    const ec = {id:'err-'+Date.now(),name:'Error: '+err.message,device:null,rx:null,tx:null,pending:null,selected:false,status:err.name,tone:'danger'};
+    pCaps.set(ec.id,ec); pRender();
   }
+}
 
-  async function reconnectAndReprogram(cap, maxWaitMs = 30000, retryIntervalMs = 2000) {
-    const name = cap.name;
-    const deadline = Date.now() + maxWaitMs;
+async function pRemove(id) {
+  const cap = pCaps.get(id); if (!cap) return;
+  if (cap.rx && cap.device?.gatt?.connected) {
+    try { await bleWrite(cap.rx, new Uint8Array([0x71])); await new Promise(r=>setTimeout(r,250)); } catch(e){}
+  }
+  try { if (cap.device?.gatt?.connected) cap.device.gatt.disconnect(); } catch(e){}
+  pCaps.delete(id); pRender();
+}
 
-    // ── Step 1: scan for the cap by name and reconnect ──
-    // The BLE address changes after reboot so we can't reuse the old device
-    // object. Instead we scan for the same CSE_Marine_XXXX name using
-    // requestDevice — this shows the picker pre-filtered to just that one
-    // device so the user just taps it when it appears.
-    olLog(`[${name}] Waiting for cap to reboot and re-advertise…`, 'lm');
-    olLog(`[${name}] A picker will appear — tap the device when it shows up.`, 'lm');
+function pSendAndWait(cap, bytes, ms=3000) {
+  return new Promise(async resolve => {
+    if (!cap.rx) { resolve(null); return; }
+    const res = d => { clearTimeout(t); resolve(d); };
+    const t = setTimeout(() => { if(cap.pending===res){cap.pending=null;resolve(null);} }, ms);
+    cap.pending = res;
+    try { await bleWrite(cap.rx, bytes); }
+    catch(e) { if(cap.pending===res){cap.pending=null;clearTimeout(t);} resolve(null); }
+  });
+}
 
-    cap.status = 'waiting to reconnect… tap device in picker'; cap.statusTone = 'working';
-    renderCapList();
+async function pProgram() {
+  if (!pSelectedLevel) return;
+  const sel = Array.from(pCaps.values()).filter(c=>c.selected&&c.rx);
+  if (!sel.length) return;
+  const m = MODE_LABELS[pSelectedLevel];
+  pe.findBtn.disabled=true; pe.programBtn.disabled=true;
+  pe.quitBtn.disabled=true; pe.modeBtns.forEach(b=>b.disabled=true);
+  sel.forEach(c=>{c.status=`programming ${m.name}…`;c.tone='working';});
+  pRender();
+  const payload = new Uint8Array([0x70, 0x30+pSelectedLevel]);
+  await Promise.all(sel.map(async cap => {
+    const ack = await pSendAndWait(cap, payload, 3000);
+    if (!ack)             { cap.status='no reply';        cap.tone='warn'; }
+    else if (ack[0]===0x50){ cap.status=`${m.name} (${m.psi} PSI)`; cap.tone='good'; }
+    else if (ack[0]===0x45){ cap.status='rejected';       cap.tone='warn'; }
+    else                   { cap.status='unexpected reply';cap.tone='warn'; }
+  }));
+  pe.findBtn.disabled=false; pe.modeBtns.forEach(b=>b.disabled=false);
+  pRender(); pUpdateControls();
+}
 
-    // Wait for the cap to reboot and re-advertise
-    await new Promise(r => setTimeout(r, 2500));
+async function pQuitAll() {
+  pe.findBtn.disabled=true; pe.quitBtn.disabled=true;
+  await Promise.all(Array.from(pCaps.keys()).map(id=>pRemove(id)));
+  pSelectedLevel=null;
+  pe.modeBtns.forEach(b=>b.classList.remove('is-selected'));
+  pe.findBtn.disabled=false;
+}
 
-    // Try getDevices() first — if the browser has the new device instance
-    // already cached under the same name we can connect without a picker.
-    // This works when the browser re-discovers the cap during the reboot
-    // window and updates its paired device list automatically.
-    let newDevice = null;
-    const deadline2 = Date.now() + maxWaitMs;
+pe.findBtn.addEventListener('click', pFind);
+pe.programBtn.addEventListener('click', pProgram);
+pe.quitBtn.addEventListener('click', pQuitAll);
+pe.selectAll.addEventListener('click', e=>{ e.preventDefault(); pCaps.forEach(c=>c.selected=true); pRender(); });
+pe.selectNone.addEventListener('click', e=>{ e.preventDefault(); pCaps.forEach(c=>c.selected=false); pRender(); });
+pe.modeBtns.forEach(btn => btn.addEventListener('click', () => {
+  pSelectedLevel = Number(btn.dataset.level);
+  pe.modeBtns.forEach(b=>b.classList.toggle('is-selected', b===btn));
+  pUpdateControls();
+}));
+pRender();
 
-    while (Date.now() < deadline2) {
-      cap.status = `scanning for ${name}…`; cap.statusTone = 'working';
-      renderCapList();
 
-      try {
-        const known = await navigator.bluetooth.getDevices();
-        const match = known.find(d => d.name === name);
-        if (match) {
-          // Try connecting — if the cap isn't advertising yet this will throw
-          const server = await match.gatt.connect();
-          // Connected — use this device going forward
-          newDevice = match;
-          caps.delete(cap.id);
-          cap.id     = newDevice.id;
-          cap.device = newDevice;
-          caps.set(cap.id, cap);
-          newDevice.addEventListener('gattserverdisconnected', () => onCapDisconnected(cap));
-          const service = await server.getPrimaryService(NUS_SERVICE);
-          cap.rxChar    = await service.getCharacteristic(NUS_RX_CHAR);
-          cap.txChar    = await service.getCharacteristic(NUS_TX_CHAR);
-          await cap.txChar.startNotifications();
-          cap.txChar.addEventListener('characteristicvaluechanged', (e) => onNotify(cap, e));
-          olLog(`[${name}] Auto-reconnected via cached device.`, 'lg');
-          break;
-        }
-      } catch (err) {
-        olLog(`[${name}] Not ready yet (${err.message}) — retrying…`, 'lm');
-      }
+/* ═══════════════════════════════════════════════════════════════════════════
+ * TAB 2: FIRMWARE UPDATE (OTA)
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
-      await new Promise(r => setTimeout(r, retryIntervalMs));
+/* ── MDFU protocol ─────────────────────────────────────────────────────── */
+const MDFU = {
+  FRAME_START:0x56, FRAME_END:0x9E, ESCAPE:0xCC,
+  CMD:{GET_CLIENT_INFO:1,START_TRANSFER:2,WRITE_CHUNK:3,GET_IMAGE_STATE:4,END_TRANSFER:5},
+  STATUS:{SUCCESS:1},
+
+  checksum(data) {
+    let sum=0;
+    const p=(data.length%2)?new Uint8Array([...data,0]):data;
+    for(let i=0;i<p.length;i+=2) sum+=(p[i+1]<<8)|p[i];
+    return (~sum)&0xffff;
+  },
+  escape(data) {
+    const o=[];
+    for(const b of data){
+      if(b===0x56)o.push(0xCC,0xA9);
+      else if(b===0x9E)o.push(0xCC,0x61);
+      else if(b===0xCC)o.push(0xCC,0x33);
+      else o.push(b);
     }
+    return new Uint8Array(o);
+  },
+  unescape(data) {
+    const o=[]; let esc=false;
+    for(const b of data){
+      if(esc){
+        if(b===0xA9)o.push(0x56);
+        else if(b===0x61)o.push(0x9E);
+        else if(b===0x33)o.push(0xCC);
+        esc=false;
+      } else if(b===0xCC){esc=true;}
+      else o.push(b);
+    }
+    return new Uint8Array(o);
+  },
+  buildFrame(packet) {
+    const crc=this.checksum(packet);
+    const payload=new Uint8Array([...packet,crc&0xff,(crc>>8)&0xff]);
+    return new Uint8Array([this.FRAME_START,...this.escape(payload),this.FRAME_END]);
+  },
+  parseFrame(frame) {
+    const payload=this.unescape(frame.slice(1,-1));
+    const data=payload.slice(0,-2);
+    const rxCrc=payload[payload.length-2]|(payload[payload.length-1]<<8);
+    if(rxCrc!==this.checksum(data)) throw new Error('CRC mismatch');
+    return data;
+  },
+  buildCmd(seq,cmd,data=new Uint8Array(),sync=false) {
+    return new Uint8Array([seq|(sync?0x80:0),cmd,...data]);
+  },
+  parseStatus(bytes) {
+    return {seq:bytes[0]&0x1f,resend:!!(bytes[0]&0x40),status:bytes[1],data:bytes.slice(2)};
+  },
+};
 
-    // If getDevices() approach failed, fall back to the picker
-    if (!newDevice) {
-      olLog(`[${name}] Auto-reconnect failed — opening picker. Tap the device when it appears.`, 'lw');
-      cap.status = 'tap device in picker to reconnect'; cap.statusTone = 'working';
-      renderCapList();
-      try {
-        newDevice = await navigator.bluetooth.requestDevice({
-          filters: [{ name: name, services: [NUS_SERVICE] }],
-          optionalServices: [NUS_SERVICE],
-        });
-        caps.delete(cap.id);
-        cap.id     = newDevice.id;
-        cap.device = newDevice;
-        caps.set(cap.id, cap);
-        newDevice.addEventListener('gattserverdisconnected', () => onCapDisconnected(cap));
-        const server  = await newDevice.gatt.connect();
-        const service = await server.getPrimaryService(NUS_SERVICE);
-        cap.rxChar    = await service.getCharacteristic(NUS_RX_CHAR);
-        cap.txChar    = await service.getCharacteristic(NUS_TX_CHAR);
-        await cap.txChar.startNotifications();
-        cap.txChar.addEventListener('characteristicvaluechanged', (e) => onNotify(cap, e));
-        olLog(`[${name}] Reconnected via picker.`, 'lg');
-      } catch (err) {
-        if (err.name === 'NotFoundError') {
-          cap.status = 'reconnect cancelled'; cap.statusTone = 'warn';
-          olLog(`[${name}] Picker cancelled — skipping re-program.`, 'lw');
-        } else {
-          cap.status = 'reconnect failed'; cap.statusTone = 'danger';
-          olLog(`[${name}] Failed: ${err.message}`, 'le');
-        }
-        renderCapList();
+class FrameReceiver {
+  constructor(){ this._buf=[]; this._resolve=null; this._reject=null; this._timer=null; }
+  feed(bytes){ for(const b of bytes)this._buf.push(b); this._try(); }
+  next(ms=8000){
+    return new Promise((res,rej)=>{
+      this._resolve=res; this._reject=rej;
+      this._timer=setTimeout(()=>{ this._resolve=null; this._reject=null; rej(new Error(`Frame timeout (${ms}ms)`)); },ms);
+      this._try();
+    });
+  }
+  _try(){
+    if(!this._resolve) return;
+    const start=this._buf.indexOf(MDFU.FRAME_START);
+    if(start===-1) return;
+    for(let i=start+1;i<this._buf.length;i++){
+      if(this._buf[i]===MDFU.FRAME_END&&this._buf[i-1]!==MDFU.ESCAPE){
+        const frame=new Uint8Array(this._buf.splice(0,i+1));
+        clearTimeout(this._timer);
+        const r=this._resolve; this._resolve=null; this._reject=null; r(frame);
         return;
       }
     }
-
-    // ── Step 2: re-program the pressure mode on the new firmware ──
-    if (selectedLevel === null) {
-      cap.status = 'connected (OTA done)'; cap.statusTone = 'good';
-      renderCapList();
-      olLog(`[${name}] No mode selected — skipping re-program.`, 'lm');
-      return;
-    }
-
-    const m = MODE_LABELS[selectedLevel];
-    cap.status = `re-programming ${m.name}…`; cap.statusTone = 'working';
-    renderCapList();
-    olLog(`[${name}] Re-programming ${m.name} on new firmware…`);
-
-    const ack = await sendAndWait(cap, encodeLevel(selectedLevel), 4000);
-    if (ack && ack[0] === 0x50) {
-      cap.currentLevel = selectedLevel;
-      cap.status = `${m.name} (${m.psi} PSI) — OTA done`; cap.statusTone = 'good';
-      olLog(`[${name}] ${m.name} programmed OK.`, 'lg');
-    } else if (ack && ack[0] === 0x45) {
-      cap.status = 'mode rejected after OTA'; cap.statusTone = 'warn';
-      olLog(`[${name}] Mode rejected by new firmware.`, 'lw');
-    } else {
-      cap.status = 'no reply to mode after OTA'; cap.statusTone = 'warn';
-      olLog(`[${name}] No reply to mode command.`, 'lw');
-    }
-    renderCapList();
   }
+  reset(){ this._buf=[]; }
+}
 
-  async function runOtaOnSelected() {
-    if (!otaImageBytes) return;
-    const selected = Array.from(caps.values()).filter(c => c.selected && c.rxChar);
-    if (selected.length === 0) return;
+/* ── OTA state ─────────────────────────────────────────────────────────── */
+let otaImageBytes = null;
+let otaCap = null;  // single cap object for OTA
 
-    lockUI(true);
-    clearLog();
-    setProgressIndeterminate(`Starting OTA on ${selected.length} cap${selected.length===1?'':'s'}…`);
+const oe = {
+  findBtn:     document.getElementById('o-findBtn'),
+  flashBtn:    document.getElementById('o-flashBtn'),
+  capList:     document.getElementById('o-capList'),
+  progressWrap:document.getElementById('o-progressWrap'),
+  progressFill:document.getElementById('o-progressFill'),
+  progressLabel:document.getElementById('o-progressLabel'),
+  log:         document.getElementById('o-log'),
+  fwCard:      document.getElementById('fw-card'),
+  fwIcon:      document.getElementById('fw-icon'),
+  fwTitle:     document.getElementById('fw-title'),
+  fwMeta:      document.getElementById('fw-meta'),
+  fwRefetch:   document.getElementById('fw-refetchBtn'),
+  dropzone:    document.getElementById('ota-dropzone'),
+  fileInput:   document.getElementById('ota-fileInput'),
+  dropIcon:    document.getElementById('ota-dropIcon'),
+  dropTitle:   document.getElementById('ota-dropTitle'),
+};
 
-    for (const cap of selected) {
-      olLog(`\n── ${cap.name} ──`);
+/* ── Firmware fetch ────────────────────────────────────────────────────── */
+function fwState(state, title, meta) {
+  oe.fwCard.className = 'fw-card' + (state?' is-'+state:'');
+  oe.fwIcon.textContent = {good:'✅',error:'❌',loading:'⏳'}[state]??'📦';
+  oe.fwTitle.textContent = title;
+  oe.fwMeta.textContent = meta||'';
+  oe.fwRefetch.style.display = (state==='error'||state==='good') ? '' : 'none';
+}
+
+async function fetchFirmware() {
+  fwState('loading','Downloading firmware…','');
+  try {
+    const filename = FIRMWARE_URL.split('/').pop();
+    const res = await fetch(FIRMWARE_URL);
+    if (!res.ok) throw new Error(res.status===404?`File not found: ${filename}`:`HTTP ${res.status}`);
+    const buf = await res.arrayBuffer();
+    otaImageBytes = new Uint8Array(buf);
+    fwState('good',`${filename}  (${(otaImageBytes.length/1024).toFixed(1)} KB)`,
+      `Fetched ${new Date().toLocaleTimeString()}`);
+    oUpdateControls();
+  } catch(err) {
+    fwState('error','Firmware fetch failed',err.message);
+  }
+}
+
+oe.fwRefetch.addEventListener('click', fetchFirmware);
+
+function handleLocalFile(file) {
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = e => {
+    otaImageBytes = new Uint8Array(e.target.result);
+    oe.dropzone.classList.add('has-file');
+    oe.dropIcon.textContent = '✅';
+    oe.dropTitle.textContent = `${file.name}  (${(file.size/1024).toFixed(1)} KB)`;
+    fwState('good',`${file.name} (local)`,`${(file.size/1024).toFixed(1)} KB`);
+    oUpdateControls();
+  };
+  r.readAsArrayBuffer(file);
+}
+
+oe.fileInput.addEventListener('change', () => handleLocalFile(oe.fileInput.files[0]));
+oe.dropzone.addEventListener('dragover', e=>{ e.preventDefault(); oe.dropzone.classList.add('drag-over'); });
+oe.dropzone.addEventListener('dragleave', ()=>oe.dropzone.classList.remove('drag-over'));
+oe.dropzone.addEventListener('drop', e=>{ e.preventDefault(); oe.dropzone.classList.remove('drag-over'); handleLocalFile(e.dataTransfer.files[0]); });
+
+/* ── OTA cap ───────────────────────────────────────────────────────────── */
+function oRenderCap() {
+  if (!otaCap) {
+    oe.capList.innerHTML = '<div class="cap-empty">No cap connected.</div>';
+  } else {
+    oe.capList.innerHTML = '';
+    const row = document.createElement('div');
+    row.className = 'cap-row';
+    row.innerHTML = `
+      <div style="width:20px"></div>
+      <div class="cap-info"><span class="cap-name"></span><span class="cap-status"></span></div>
+      <button class="btn btn-ghost btn-sm" id="o-removeBtn">Remove</button>`;
+    row.querySelector('.cap-name').textContent = otaCap.name;
+    const s = row.querySelector('.cap-status');
+    s.textContent = otaCap.status;
+    if (otaCap.tone) s.setAttribute('data-tone', otaCap.tone);
+    oe.capList.appendChild(row);
+    document.getElementById('o-removeBtn').addEventListener('click', oRemoveCap);
+  }
+  oUpdateControls();
+}
+
+function oUpdateControls() {
+  oe.flashBtn.disabled = !(otaImageBytes && otaCap && otaCap.rx);
+}
+
+async function oFindCap() {
+  try {
+    const device = await navigator.bluetooth.requestDevice({
+      filters: [{ services: [NUS_SERVICE] }],
+      optionalServices: [NUS_SERVICE],
+    });
+    if (otaCap) await oRemoveCap();
+    otaCap = { id:device.id, name:device.name||'(unnamed)', device,
+               rx:null, tx:null, pending:null, status:'connecting…', tone:'working' };
+    oRenderCap();
+    device.addEventListener('gattserverdisconnected', () => {
+      if (otaCap) { otaCap.rx=null; otaCap.tx=null;
+        if (!otaCap.status.startsWith('OTA')) { otaCap.status='connection lost'; otaCap.tone='warn'; }
+        oRenderCap(); }
+    });
+    const { rx, tx } = await bleConnect(device);
+    otaCap.rx=rx; otaCap.tx=tx;
+    tx.addEventListener('characteristicvaluechanged', e => {
+      const b=new Uint8Array(e.target.value.buffer,e.target.value.byteOffset,e.target.value.byteLength);
+      if(otaCap?.pending){const r=otaCap.pending;otaCap.pending=null;r(b);}
+    });
+    otaCap.status='connected'; otaCap.tone='good'; oRenderCap();
+  } catch(err) {
+    if (err.name!=='NotFoundError') console.error('OTA findCap:',err);
+  }
+}
+
+async function oRemoveCap() {
+  if (!otaCap) return;
+  if (otaCap.rx && otaCap.device?.gatt?.connected) {
+    try { await bleWrite(otaCap.rx, new Uint8Array([0x71])); await new Promise(r=>setTimeout(r,250)); } catch(e){}
+  }
+  try { if (otaCap.device?.gatt?.connected) otaCap.device.gatt.disconnect(); } catch(e){}
+  otaCap = null; oRenderCap();
+}
+
+function oSendAndWait(bytes, ms=3000) {
+  return new Promise(async resolve => {
+    if (!otaCap?.rx) { resolve(null); return; }
+    const res=d=>{clearTimeout(t);resolve(d);};
+    const t=setTimeout(()=>{if(otaCap?.pending===res){otaCap.pending=null;resolve(null);}},ms);
+    otaCap.pending=res;
+    try { await bleWrite(otaCap.rx,bytes); }
+    catch(e){if(otaCap?.pending===res){otaCap.pending=null;clearTimeout(t);}resolve(null);}
+  });
+}
+
+/* ── OTA log / progress ────────────────────────────────────────────────── */
+function oLog(msg,cls=''){
+  oe.log.classList.add('is-visible');
+  const p=document.createElement('p');
+  if(cls)p.className=cls;
+  p.textContent=msg;
+  oe.log.appendChild(p);
+  oe.log.scrollTop=oe.log.scrollHeight;
+}
+function oClearLog(){ oe.log.innerHTML=''; oe.log.classList.remove('is-visible'); }
+function oProgress(pct,label,cls=''){
+  oe.progressWrap.classList.add('is-visible');
+  oe.progressFill.classList.remove('ind');
+  oe.progressFill.style.width=pct+'%';
+  oe.progressLabel.textContent=label;
+  oe.progressLabel.className='progress-label'+(cls?' '+cls:'');
+}
+function oProgressInd(label){
+  oe.progressWrap.classList.add('is-visible');
+  oe.progressFill.classList.add('ind');
+  oe.progressFill.style.width='';
+  oe.progressLabel.textContent=label;
+  oe.progressLabel.className='progress-label';
+}
+
+/* ── MDFU upgrade ──────────────────────────────────────────────────────── */
+async function runMdfu(imageBytes) {
+  const receiver = new FrameReceiver();
+  const notifyH = e => {
+    const v=e.target.value;
+    receiver.feed(new Uint8Array(v.buffer,v.byteOffset,v.byteLength));
+  };
+  otaCap.tx.addEventListener('characteristicvaluechanged', notifyH);
+
+  let seq=0;
+  const RETRIES=5;
+
+  async function sendCmd(cmd, data=new Uint8Array(), sync=false, ms=10000) {
+    for (let attempt=0; attempt<=RETRIES; attempt++) {
+      const frame = MDFU.buildFrame(MDFU.buildCmd(seq,cmd,data,sync));
+      for (let off=0; off<frame.length; off+=20)
+        await bleWrite(otaCap.rx, frame.slice(off,off+20));
+      let sp;
       try {
-        await otaOneCap(cap, otaImageBytes);
-      } catch (err) {
-        olLog(`[${cap.name}] OTA FAILED: ${err.message}`, 'le');
-        cap.status = `OTA failed: ${err.message.slice(0, 40)}`; cap.statusTone = 'danger';
-        renderCapList();
+        const sf = await receiver.next(ms);
+        sp = MDFU.parseStatus(MDFU.parseFrame(sf));
+      } catch(e) {
+        if(attempt<RETRIES){oLog(`  retry ${attempt+1}: ${e.message}`,'lm');continue;}
+        throw e;
       }
-    }
-
-    setProgressDone('OTA done. Caps reconnected and pressure mode re-programmed.');
-    lockUI(false);
-  }
-
-  // ══════════════════════════════════════════════════════════════════════════
-  //  Pressure mode encoding
-  // ══════════════════════════════════════════════════════════════════════════
-
-  function encodeLevel(level) {
-    if (!Number.isInteger(level) || level < 1 || level > 4) throw new Error(`Bad level: ${level}`);
-    return new Uint8Array([0x70, 0x30 + level]);
-  }
-
-  // ══════════════════════════════════════════════════════════════════════════
-  //  Cap list rendering
-  // ══════════════════════════════════════════════════════════════════════════
-
-  function renderCapList() {
-    const list = Array.from(caps.values());
-    if (list.length === 0) {
-      el.capList.innerHTML = '<div class="cap-empty">No caps yet.</div>';
-      el.capControls.style.display = 'none';
-      updateControls();
-      return;
-    }
-    el.capList.innerHTML = '';
-    for (const cap of list) {
-      const row = document.createElement('label');
-      row.className = 'cap-row' + (cap.selected ? ' is-selected' : '');
-      row.innerHTML = `
-        <input type="checkbox" class="cap-checkbox" data-id="${cap.id}"${cap.selected ? ' checked' : ''}>
-        <div class="cap-info"><span class="cap-name"></span><span class="cap-status"></span></div>
-        <button class="btn btn-ghost btn-small" data-remove="${cap.id}">Remove</button>`;
-      row.querySelector('.cap-name').textContent = cap.name;
-      const s = row.querySelector('.cap-status');
-      s.textContent = cap.status;
-      if (cap.statusTone) s.setAttribute('data-tone', cap.statusTone);
-      el.capList.appendChild(row);
-    }
-    el.capList.querySelectorAll('.cap-checkbox').forEach(cb => {
-      cb.addEventListener('change', () => {
-        const cap = caps.get(cb.dataset.id);
-        if (cap) { cap.selected = cb.checked; renderCapList(); }
-      });
-    });
-    el.capList.querySelectorAll('[data-remove]').forEach(btn => {
-      btn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); removeCap(btn.dataset.remove); });
-    });
-    el.capControls.style.display = 'flex';
-    const sel = list.filter(c => c.selected).length;
-    el.selectedCount.textContent = `${sel} of ${list.length} selected`;
-    updateControls();
-  }
-
-  function updateControls() {
-    const list = Array.from(caps.values());
-    const selConn = list.filter(c => c.selected && c.rxChar).length;
-    const hasMode = selectedLevel !== null;
-    el.programBtn.disabled = !(selConn > 0 && hasMode);
-    el.quitBtn.disabled = list.length === 0;
-    el.btnOtaOnly.disabled = !(selConn > 0 && otaImageBytes);
-
-    if (hasMode && selConn > 0) {
-      const m = MODE_LABELS[selectedLevel];
-      const suffix = (otaEnabled && otaImageBytes) ? ' + flash firmware' : '';
-      el.programBtn.textContent = `Program ${m.name} to ${selConn} cap${selConn===1?'':'s'}${suffix}`;
-    } else {
-      el.programBtn.textContent = 'Program';
+      if (sp.resend){if(attempt<RETRIES)continue;throw new Error('Too many resends');}
+      if (sp.status!==MDFU.STATUS.SUCCESS) throw new Error(`MDFU error ${sp.status}`);
+      seq=(seq+1)&0x1f;
+      return sp;
     }
   }
 
-  // ══════════════════════════════════════════════════════════════════════════
-  //  BLE connect / disconnect
-  // ══════════════════════════════════════════════════════════════════════════
+  try {
+    oLog('MDFU: GET_CLIENT_INFO…');
+    const info = await sendCmd(MDFU.CMD.GET_CLIENT_INFO,new Uint8Array(),true,5000);
+    let bufSize=64;
+    for(let i=0;i<info.data.length;){const t=info.data[i],l=info.data[i+1];if(t===2&&l>=2)bufSize=info.data[i+2]|(info.data[i+3]<<8);i+=2+l;}
+    oLog(`  buffer size: ${bufSize} B`,'lm');
 
-  // Safe write: tries writeValueWithResponse (Chrome 85+), falls back to
-  // writeValue (older Android Chrome). Both are equivalent for our purposes.
-  async function bleWrite(char, bytes) {
-    if (typeof char.writeValueWithResponse === 'function') {
-      return char.writeValueWithResponse(bytes);
-    }
-    return char.writeValue(bytes);
-  }
+    oLog('MDFU: START_TRANSFER…');
+    await sendCmd(MDFU.CMD.START_TRANSFER,new Uint8Array(),false,5000);
 
-  async function findCap() {
-    try {
-      // Filter on the NUS service UUID only — this is what forces Chrome to
-      // scan for scan-response packets where the BC805M advertises the UUID.
-      // A namePrefix filter alone doesn't trigger scan-response scanning and
-      // shows nothing. We verify the CSE_Marine_ prefix ourselves after the
-      // picker returns.
-      const device = await navigator.bluetooth.requestDevice({
-        filters: [{ services: [NUS_SERVICE] }],
-        optionalServices: [NUS_SERVICE],
-      });
-      // Reject non-CSE devices (shouldn't appear, but just in case)
-      if (device.name && !device.name.startsWith('CSE_Marine_')) {
-        console.warn('Ignoring non-CSE device:', device.name);
-        return;
-      }
-      if (caps.has(device.id)) return;
-      const cap = { id: device.id, name: device.name || '(unnamed)', device, rxChar: null, txChar: null, pending: null, selected: true, currentLevel: null, status: 'connecting…', statusTone: 'working' };
-      caps.set(device.id, cap);
-      renderCapList();
-      device.addEventListener('gattserverdisconnected', () => onCapDisconnected(cap));
-      const server  = await device.gatt.connect();
-      const service = await server.getPrimaryService(NUS_SERVICE);
-      cap.rxChar    = await service.getCharacteristic(NUS_RX_CHAR);
-      cap.txChar    = await service.getCharacteristic(NUS_TX_CHAR);
-      await cap.txChar.startNotifications();
-      cap.txChar.addEventListener('characteristicvaluechanged', (e) => onNotify(cap, e));
-      cap.status = 'connected'; cap.statusTone = 'good';
-      renderCapList();
-    } catch (err) {
-      if (err.name === 'NotFoundError') return; // user cancelled picker — silent
-      // Surface the real error in the cap list so it's visible on mobile
-      // (DevTools isn't available there)
-      const errCap = { id: 'err-' + Date.now(), name: '⚠ ' + err.message, device: null, rxChar: null, txChar: null, pending: null, selected: false, currentLevel: null, status: err.name, statusTone: 'danger' };
-      caps.set(errCap.id, errCap);
-      renderCapList();
-      console.error('findCap error:', err);
-    }
-  }
-
-  async function removeCap(id) {
-    const cap = caps.get(id);
-    if (!cap) return;
-    if (cap.rxChar && cap.device?.gatt?.connected) {
-      try { await bleWrite(cap.rxChar, new Uint8Array([0x71])); await new Promise(r=>setTimeout(r,250)); } catch(e){}
-    }
-    try { if (cap.device?.gatt?.connected) cap.device.gatt.disconnect(); } catch(e){}
-    caps.delete(id);
-    renderCapList();
-  }
-
-  function onCapDisconnected(cap) {
-    cap.rxChar = null; cap.txChar = null;
-    if (!cap.status.startsWith('OTA')) { cap.status = 'connection lost'; cap.statusTone = 'warn'; }
-    renderCapList();
-  }
-
-  async function quitAll() {
-    const ids = Array.from(caps.keys());
-    el.findBtn.disabled = true; el.quitBtn.disabled = true;
-    await Promise.all(ids.map(id => removeCap(id)));
-    selectedLevel = null;
-    el.modeBtns.forEach(b => b.classList.remove('is-selected'));
-    el.findBtn.disabled = false;
-  }
-
-  // ══════════════════════════════════════════════════════════════════════════
-  //  BLE notify / send helpers  (pressure mode path)
-  // ══════════════════════════════════════════════════════════════════════════
-
-  function onNotify(cap, event) {
-    const v = event.target.value;
-    const bytes = new Uint8Array(v.buffer, v.byteOffset, v.byteLength);
-    if (cap.pending) { const r = cap.pending; cap.pending = null; r(bytes); }
-  }
-
-  function sendAndWait(cap, bytes, timeoutMs = 3000) {
-    return new Promise(async (resolve) => {
-      if (!cap.rxChar) { resolve(null); return; }
-      const localResolve = (d) => { clearTimeout(timer); resolve(d); };
-      const timer = setTimeout(() => { if (cap.pending === localResolve) { cap.pending = null; resolve(null); } }, timeoutMs);
-      cap.pending = localResolve;
-      try {
-        await bleWrite(cap.rxChar, bytes);
-      } catch (err) {
-        if (cap.pending === localResolve) { cap.pending = null; clearTimeout(timer); }
-        resolve(null);
-      }
-    });
-  }
-
-  // ══════════════════════════════════════════════════════════════════════════
-  //  Program pressure mode (+ optional OTA)
-  // ══════════════════════════════════════════════════════════════════════════
-
-  async function programSelected() {
-    if (selectedLevel === null) return;
-    const selected = Array.from(caps.values()).filter(c => c.selected && c.rxChar);
-    if (selected.length === 0) return;
-
-    const m = MODE_LABELS[selectedLevel];
-    lockUI(true);
-
-    if (otaEnabled && otaImageBytes) {
-      clearLog();
-      setProgressIndeterminate(`Programming ${m.name}…`);
+    const total = Math.ceil(imageBytes.length/bufSize);
+    oLog(`MDFU: writing ${total} chunks (${imageBytes.length} B)…`);
+    for(let i=0;i<imageBytes.length;i+=bufSize){
+      await sendCmd(MDFU.CMD.WRITE_CHUNK,imageBytes.slice(i,i+bufSize),false,15000);
+      oProgress(Math.min(Math.round(((i+bufSize)/imageBytes.length)*100),99),
+        `Flashing… ${Math.min(Math.round(((i+bufSize)/imageBytes.length)*100),99)}%`);
     }
 
-    for (const cap of selected) { cap.status = `programming ${m.name}…`; cap.statusTone = 'working'; }
-    renderCapList();
+    oLog('MDFU: GET_IMAGE_STATE…');
+    const state = await sendCmd(MDFU.CMD.GET_IMAGE_STATE,new Uint8Array(),false,10000);
+    if(state.data[0]!==1) throw new Error(`Image invalid (state=${state.data[0]})`);
+    oLog('  image VALID','lg');
 
-    const payload = encodeLevel(selectedLevel);
-    const results = await Promise.all(selected.map(async (cap) => {
-      const ack = await sendAndWait(cap, payload, 3000);
-      if (ack === null)                          { cap.status = 'no reply';        cap.statusTone = 'warn';   return { cap, ok: false }; }
-      if (ack[0] === 0x50)                       { cap.status = `${m.name} (${m.psi} PSI)`; cap.statusTone = 'good'; return { cap, ok: true  }; }
-      if (ack[0] === 0x45)                       { cap.status = 'rejected';        cap.statusTone = 'warn';   return { cap, ok: false }; }
-      cap.status = 'unexpected reply'; cap.statusTone = 'warn'; return { cap, ok: false };
-    }));
-    renderCapList();
+    oLog('MDFU: END_TRANSFER…');
+    await sendCmd(MDFU.CMD.END_TRANSFER,new Uint8Array(),false,10000);
 
-    if (otaEnabled && otaImageBytes) {
-      const good = results.filter(r => r.ok).map(r => r.cap);
-      const bad  = results.filter(r => !r.ok);
-      bad.forEach(r => olLog(`[${r.cap.name}] Skipping OTA — mode programming failed`, 'lw'));
+    oProgress(100,'Flash complete!','good');
+    oLog('Done! Cap is rebooting into new firmware.','lg');
+    oLog('Switch to the Pressure Mode tab to reconnect and set the mode.','lm');
 
-      for (const cap of good) {
-        olLog(`\n── ${cap.name} ──`);
-        try {
-          await otaOneCap(cap, otaImageBytes);
-        } catch (err) {
-          olLog(`[${cap.name}] OTA FAILED: ${err.message}`, 'le');
-          cap.status = `OTA failed`; cap.statusTone = 'danger';
-          renderCapList();
-        }
-      }
-      setProgressDone(good.length ? 'OTA finished. Caps are rebooting.' : 'Mode programmed (OTA skipped).');
-    }
-
-    lockUI(false);
-    renderCapList();
-    updateControls();
+  } finally {
+    otaCap.tx.removeEventListener('characteristicvaluechanged',notifyH);
   }
+}
 
-  // ══════════════════════════════════════════════════════════════════════════
-  //  UI helpers
-  // ══════════════════════════════════════════════════════════════════════════
+/* ── Flash button ──────────────────────────────────────────────────────── */
+async function doFlash() {
+  if (!otaImageBytes || !otaCap?.rx) return;
 
-  function lockUI(locked) {
-    el.findBtn.disabled = locked;
-    el.programBtn.disabled = locked;
-    el.quitBtn.disabled = locked || caps.size === 0;
-    el.modeBtns.forEach(b => b.disabled = locked);
-    el.btnOtaOnly.disabled = locked || !otaImageBytes;
+  oe.findBtn.disabled=true; oe.flashBtn.disabled=true;
+  oClearLog(); oProgressInd('Starting OTA…');
+
+  try {
+    // 1. Primer 'b'
+    otaCap.status='OTA: priming…'; otaCap.tone='working'; oRenderCap();
+    oLog("Sending primer 'b'…");
+    const primer = await oSendAndWait(new Uint8Array([0x62]),2000);
+    oLog(primer ? `Link hot (ack: ${new TextDecoder().decode(primer).trim()})` : 'No primer ack — proceeding','lm');
+
+    // 2. OTA trigger 'O'
+    otaCap.status='OTA: triggering bootloader…'; otaCap.tone='working'; oRenderCap();
+    oLog("Sending OTA trigger 'O'…");
+    try { await bleWrite(otaCap.rx, new Uint8Array([0x4F])); } catch(e){}
+
+    otaCap.status='OTA: bootloader starting…'; otaCap.tone='working'; oRenderCap();
+    oLog('Waiting for bootloader (1.5 s)…','lm');
+    await new Promise(r=>setTimeout(r,1500));
+
+    // 3. MDFU
+    otaCap.status='OTA: flashing…'; otaCap.tone='working'; oRenderCap();
+    await runMdfu(otaImageBytes);
+
+    // 4. Done — cap reboots, connection drops naturally
+    otaCap.rx=null; otaCap.tx=null;
+    try { otaCap.device.gatt.disconnect(); } catch(e){}
+    otaCap.status='OTA complete — rebooting'; otaCap.tone='good'; oRenderCap();
+
+  } catch(err) {
+    oLog(`OTA FAILED: ${err.message}`,'le');
+    oProgress(0,'OTA failed','error');
+    otaCap.status=`OTA failed`; otaCap.tone='danger'; oRenderCap();
+  } finally {
+    oe.findBtn.disabled=false;
+    oUpdateControls();
   }
+}
 
-  function olLog(msg, cls = '') {
-    el.otaLog.classList.add('is-visible');
-    const p = document.createElement('p');
-    if (cls) p.className = cls;
-    p.textContent = msg;
-    el.otaLog.appendChild(p);
-    el.otaLog.scrollTop = el.otaLog.scrollHeight;
+oe.findBtn.addEventListener('click', oFindCap);
+oe.flashBtn.addEventListener('click', doFlash);
+
+// Auto-fetch firmware on page load
+fetchFirmware();
+
+oRenderCap();
+
+window.addEventListener('beforeunload', () => {
+  for (const cap of pCaps.values()) {
+    try { if(cap.rx&&cap.device?.gatt?.connected) bleWrite(cap.rx,new Uint8Array([0x71])); } catch(e){}
+    try { if(cap.device?.gatt?.connected) cap.device.gatt.disconnect(); } catch(e){}
   }
-
-  function clearLog() {
-    el.otaLog.innerHTML = '';
-    el.otaLog.classList.remove('is-visible');
+  if (otaCap?.device?.gatt?.connected) {
+    try { bleWrite(otaCap.rx,new Uint8Array([0x71])); } catch(e){}
+    try { otaCap.device.gatt.disconnect(); } catch(e){}
   }
-
-  function setProgressIndeterminate(label) {
-    el.progressWrap.classList.add('is-visible');
-    el.progressFill.style.width = '';
-    el.progressFill.classList.add('indeterminate');
-    el.progressLabel.textContent = label;
-    el.progressLabel.className = 'ota-progress-label';
-  }
-
-  function setProgress(pct, label) {
-    el.progressWrap.classList.add('is-visible');
-    el.progressFill.classList.remove('indeterminate');
-    el.progressFill.style.width = pct + '%';
-    el.progressLabel.textContent = label;
-    el.progressLabel.className = 'ota-progress-label';
-  }
-
-  function setProgressDone(label) {
-    el.progressFill.classList.remove('indeterminate');
-    el.progressFill.style.width = '100%';
-    el.progressLabel.textContent = label;
-    el.progressLabel.className = 'ota-progress-label good';
-  }
-
-  function setProgressError(label) {
-    el.progressFill.classList.remove('indeterminate');
-    el.progressFill.style.width = '0%';
-    el.progressLabel.textContent = label;
-    el.progressLabel.className = 'ota-progress-label error';
-  }
-
-  // ══════════════════════════════════════════════════════════════════════════
-  //  GitHub release auto-fetch
-  // ══════════════════════════════════════════════════════════════════════════
-
-  let fetchedAssetName = '';
-
-  function fwCardState(state, title, meta) {
-    el.fwCard.className = 'fw-card' + (state ? ' is-' + state : '');
-    el.fwCardIcon.textContent  = { good: '✅', error: '❌', loading: '⏳' }[state] ?? '📦';
-    el.fwCardTitle.textContent = title;
-    el.fwCardMeta.textContent  = meta || '';
-  }
-
-  async function fetchLatestRelease() {
-    fwCardState('loading', 'Downloading firmware…', '');
-    el.btnRefetch.disabled = true;
-    try {
-      const filename = FIRMWARE_URL.split('/').pop().split('?')[0];
-      const res = await fetch(FIRMWARE_URL);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const buf = await res.arrayBuffer();
-      otaImageBytes = new Uint8Array(buf);
-      fetchedAssetName = filename;
-      fwCardState('good',
-        `${filename}  (${(otaImageBytes.length / 1024).toFixed(1)} KB)`,
-        `Fetched ${new Date().toLocaleTimeString()}`
-      );
-      updateControls();
-    } catch (err) {
-      fwCardState('error', 'Fetch failed', err.message);
-    } finally {
-      el.btnRefetch.disabled = false;
-    }
-  }
-  el.otaToggle.addEventListener('change', () => {
-    otaEnabled = el.otaToggle.checked;
-    el.otaConfig.classList.toggle('is-visible', otaEnabled);
-    updateControls();
-    // Kick off auto-fetch the first time the toggle is turned on
-    if (otaEnabled && !otaImageBytes && !fetchedAssetName) {
-      fetchLatestRelease();
-    }
-  });
-
-  el.btnRefetch.addEventListener('click', fetchLatestRelease);
-
-  // ── Local file override ───────────────────────────────────────────────────
-
-  function handleImageFile(file) {
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      otaImageBytes = new Uint8Array(e.target.result);
-      el.otaDropzone.classList.add('has-file');
-      el.otaDropIcon.textContent  = '✅';
-      el.otaDropTitle.textContent = `${file.name}  (${(file.size/1024).toFixed(1)} KB)`;
-      el.otaDropSub.textContent   = 'Local file — overriding auto-fetched release';
-      fwCardState('good', `${file.name} (local override)`, `${(file.size/1024).toFixed(1)} KB`);
-      fetchedReleaseName = '(local)';
-      fetchedAssetName   = file.name;
-      updateControls();
-    };
-    reader.readAsArrayBuffer(file);
-  }
-
-  el.otaFileInput.addEventListener('change', () => handleImageFile(el.otaFileInput.files[0]));
-  el.otaDropzone.addEventListener('dragover',  (e) => { e.preventDefault(); el.otaDropzone.classList.add('drag-over'); });
-  el.otaDropzone.addEventListener('dragleave', ()  => el.otaDropzone.classList.remove('drag-over'));
-  el.otaDropzone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    el.otaDropzone.classList.remove('drag-over');
-    handleImageFile(e.dataTransfer.files[0]);
-  });
-
-  el.btnOtaOnly.addEventListener('click', runOtaOnSelected);
-
-  // ══════════════════════════════════════════════════════════════════════════
-  //  Existing button wiring
-  // ══════════════════════════════════════════════════════════════════════════
-
-  el.findBtn.addEventListener('click', findCap);
-  el.programBtn.addEventListener('click', programSelected);
-  el.quitBtn.addEventListener('click', quitAll);
-  el.selectAll.addEventListener('click', (e) => { e.preventDefault(); for (const c of caps.values()) c.selected = true; renderCapList(); });
-  el.selectNone.addEventListener('click', (e) => { e.preventDefault(); for (const c of caps.values()) c.selected = false; renderCapList(); });
-  el.modeBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      selectedLevel = Number(btn.dataset.level);
-      el.modeBtns.forEach(b => b.classList.toggle('is-selected', b === btn));
-      updateControls();
-    });
-  });
-
-  renderCapList();
-
-  window.addEventListener('beforeunload', () => {
-    for (const cap of caps.values()) {
-      try { if (cap.rxChar && cap.device?.gatt?.connected) bleWrite(cap.rxChar, new Uint8Array([0x71])); } catch(e){}
-      try { if (cap.device.gatt?.connected) cap.device.gatt.disconnect(); } catch(e){}
-    }
-  });
-  </script>
+});
+</script>
 </body>
 </html>
