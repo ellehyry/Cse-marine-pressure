@@ -679,6 +679,48 @@
   //  OTA high-level flow: primer → trigger → MDFU session
   // ══════════════════════════════════════════════════════════════════════════
 
+  // ══════════════════════════════════════════════════════════════════════════
+  //  Reconnect after OTA reboot
+  // ══════════════════════════════════════════════════════════════════════════
+
+  async function reconnectAfterOta(cap, maxWaitMs = 30000, retryIntervalMs = 2000) {
+    const name = cap.name;
+    const deadline = Date.now() + maxWaitMs;
+
+    // Null the chars so onCapDisconnected doesn't clobber the status
+    cap.rxChar = null;
+    cap.txChar = null;
+
+    let attempt = 0;
+    while (Date.now() < deadline) {
+      attempt++;
+      cap.status = `reconnecting… (${attempt})`; cap.statusTone = 'working';
+      renderCapList();
+
+      try {
+        const server  = await cap.device.gatt.connect();
+        const service = await server.getPrimaryService(NUS_SERVICE);
+        cap.rxChar    = await service.getCharacteristic(NUS_RX_CHAR);
+        cap.txChar    = await service.getCharacteristic(NUS_TX_CHAR);
+        await cap.txChar.startNotifications();
+        // Re-attach the normal notify handler
+        cap.txChar.addEventListener('characteristicvaluechanged', (e) => onNotify(cap, e));
+        cap.status = 'connected (OTA done)'; cap.statusTone = 'good';
+        renderCapList();
+        olLog(`[${name}] Reconnected after OTA.`, 'lg');
+        return;
+      } catch (err) {
+        olLog(`[${name}] Reconnect attempt ${attempt} failed: ${err.message}`, 'lm');
+        await new Promise(r => setTimeout(r, retryIntervalMs));
+      }
+    }
+
+    // Timed out
+    cap.status = 'OTA done — tap Find caps to reconnect'; cap.statusTone = 'warn';
+    renderCapList();
+    olLog(`[${name}] Could not auto-reconnect after ${maxWaitMs/1000}s. Reconnect manually.`, 'lw');
+  }
+
   async function otaOneCap(cap, imageBytes) {
     const name = cap.name;
 
@@ -721,8 +763,16 @@
       renderCapList();
     });
 
-    cap.status = 'OTA complete — rebooting'; cap.statusTone = 'good';
+    cap.status = 'OTA complete — reconnecting…'; cap.statusTone = 'working';
     renderCapList();
+    olLog(`[${name}] Flash done. Waiting for cap to reboot and re-advertise…`, 'lm');
+
+    // ── 4. Reconnect after reboot ──
+    // The cap reboots after END_TRANSFER, drops BLE, then re-advertises.
+    // The BC805M on_disconnected() calls bt_le_adv_start() so it comes
+    // back automatically. We retry gatt.connect() — the browser already
+    // has the device paired so no picker needed.
+    await reconnectAfterOta(cap);
   }
 
   async function runOtaOnSelected() {
@@ -745,7 +795,7 @@
       }
     }
 
-    setProgressDone('OTA finished. Caps are rebooting.');
+    setProgressDone('OTA finished. Caps reconnected and ready.');
     lockUI(false);
   }
 
