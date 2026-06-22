@@ -333,8 +333,11 @@
    *  GITHUB_ASSET  filename of the .img asset in the release, or null to use
    *                the first .img asset found in the release.
    * ─────────────────────────────────────────────────────────────────────────*/
-  const GITHUB_REPO  = 'ellehyry/Cse-marine-pressure';   // <-- set this
-  const GITHUB_ASSET = null;                    // <-- set to 'app_v1.img' or leave null
+  // FIRMWARE CONFIG
+  // Commit the .img file to your repo and set the path here.
+  // Format: 'owner/repo/branch/path/to/file.img'
+  // Example: 'ellehyry/Cse-marine-pressure/main/firmware/NS_application_OTA_v3.2.img'
+  const GITHUB_IMG_PATH = 'ellehyry/Cse-marine-pressure/main/NS_application_OTA_v3.2.img';
 
   /* ── Wire format / MDFU protocol (unchanged — see block comment below) ── */
   /*
@@ -1030,8 +1033,7 @@
   //  GitHub release auto-fetch
   // ══════════════════════════════════════════════════════════════════════════
 
-  let fetchedReleaseName = '';   // e.g. "v1.4.2"
-  let fetchedAssetName   = '';   // e.g. "app_v1.img"
+  let fetchedAssetName = '';
 
   function fwCardState(state, title, meta) {
     el.fwCard.className = 'fw-card' + (state ? ' is-' + state : '');
@@ -1041,65 +1043,33 @@
   }
 
   async function fetchLatestRelease() {
-    // Don't attempt if the placeholder repo name is still set
-    if (GITHUB_REPO.startsWith('YOUR_')) {
-      fwCardState('error', 'GitHub repo not configured', 'Set GITHUB_REPO at the top of the script.');
-      return;
-    }
-
-    fwCardState('loading', 'Checking for latest firmware…', '');
+    fwCardState('loading', 'Fetching firmware…', '');
     el.btnRefetch.disabled = true;
 
     try {
-      // GitHub Releases API — no auth token needed for public repos.
-      // Rate limit is 60 req/hour per IP unauthenticated, plenty for this use.
-      const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
-      const res = await fetch(apiUrl, { headers: { Accept: 'application/vnd.github+json' } });
+      // raw.githubusercontent.com serves files directly from the repo with
+      // correct CORS headers — no redirect to S3, no CORS issues.
+      const url = `https://raw.githubusercontent.com/${GITHUB_IMG_PATH}`;
+      const filename = GITHUB_IMG_PATH.split('/').pop();
 
+      fwCardState('loading', `Downloading ${filename}…`, url);
+
+      const res = await fetch(url);
       if (!res.ok) {
-        const msg = res.status === 404
-          ? 'No releases found in this repo yet.'
-          : `GitHub API error ${res.status}`;
-        fwCardState('error', msg, apiUrl);
-        return;
-      }
-
-      const release = await res.json();
-      fetchedReleaseName = release.tag_name || release.name || '(unnamed)';
-
-      // Find the right asset: GITHUB_ASSET by name, or first .img file
-      const assets = release.assets || [];
-      const asset = GITHUB_ASSET
-        ? assets.find(a => a.name === GITHUB_ASSET)
-        : assets.find(a => a.name.endsWith('.img'));
-
-      if (!asset) {
         fwCardState('error',
-          'No .img asset found in latest release',
-          `Release ${fetchedReleaseName} has ${assets.length} asset(s): ${assets.map(a=>a.name).join(', ') || 'none'}`
+          res.status === 404 ? `File not found: ${filename}` : `Download failed (HTTP ${res.status})`,
+          url
         );
         return;
       }
 
-      fetchedAssetName = asset.name;
-      const sizeKb = (asset.size / 1024).toFixed(1);
-      const date   = new Date(asset.updated_at).toLocaleDateString();
-
-      fwCardState(null, `Downloading ${asset.name}…`,
-        `Release ${fetchedReleaseName} · ${sizeKb} KB · ${date}`);
-
-      // Download the binary. GitHub release assets redirect to S3 — fetch
-      // follows redirects automatically, but the raw asset URL requires no auth
-      // for public repos.
-      const dlRes = await fetch(asset.browser_download_url);
-      if (!dlRes.ok) throw new Error(`Download failed: HTTP ${dlRes.status}`);
-
-      const buf = await dlRes.arrayBuffer();
+      const buf = await res.arrayBuffer();
       otaImageBytes = new Uint8Array(buf);
+      fetchedAssetName = filename;
 
       fwCardState('good',
-        `${asset.name}  (${(otaImageBytes.length/1024).toFixed(1)} KB)`,
-        `Release ${fetchedReleaseName} · fetched ${new Date().toLocaleTimeString()}`
+        `${filename}  (${(otaImageBytes.length / 1024).toFixed(1)} KB)`,
+        `Fetched ${new Date().toLocaleTimeString()}`
       );
       updateControls();
 
@@ -1117,7 +1087,7 @@
     el.otaConfig.classList.toggle('is-visible', otaEnabled);
     updateControls();
     // Kick off auto-fetch the first time the toggle is turned on
-    if (otaEnabled && !otaImageBytes && !fetchedReleaseName) {
+    if (otaEnabled && !otaImageBytes && !fetchedAssetName) {
       fetchLatestRelease();
     }
   });
