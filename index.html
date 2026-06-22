@@ -334,10 +334,15 @@
    *                the first .img asset found in the release.
    * ─────────────────────────────────────────────────────────────────────────*/
   // FIRMWARE CONFIG
-  // Commit the .img file to your repo and set the path here.
-  // Format: 'owner/repo/branch/path/to/file.img'
-  // Example: 'ellehyry/Cse-marine-pressure/main/firmware/NS_application_OTA_v3.2.img'
-  const GITHUB_IMG_PATH = 'ellehyry/Cse-marine-pressure/Jun-22/NS_application_OTA_v3.2.img';
+  // Set this to your GitHub repo. The page hits the Releases API to find the
+  // latest release, then downloads the first .img asset automatically.
+  // Just cut a new GitHub Release whenever you have new firmware — no URL
+  // changes needed here ever.
+  //
+  // GITHUB_ASSET: name of the .img file in the release, or null to use the
+  // first .img asset found.
+  const GITHUB_REPO  = 'ellehyry/Cse-marine-pressure';
+  const GITHUB_ASSET = null;
 
   /* ── Wire format / MDFU protocol (unchanged — see block comment below) ── */
   /*
@@ -677,7 +682,6 @@
 
   // ══════════════════════════════════════════════════════════════════════════
   //  OTA high-level flow: primer → trigger → MDFU session
-  // ══════════════════════════════════════════════════════════════════════════
 
   async function otaOneCap(cap, imageBytes) {
     const name = cap.name;
@@ -721,8 +725,14 @@
       renderCapList();
     });
 
-    cap.status = 'OTA complete — rebooting'; cap.statusTone = 'good';
+    // Cap is rebooting into new firmware — disconnect cleanly and show status.
+    cap.rxChar = null;
+    cap.txChar = null;
+    try { cap.device.gatt.disconnect(); } catch(e) {}
+    cap.status = 'OTA complete — disconnected'; cap.statusTone = 'warn';
     renderCapList();
+    olLog(`[${name}] Done. Cap is rebooting into new firmware.`, 'lg');
+    olLog(`[${name}] Tap "+ Find caps" to reconnect.`, 'lm');
   }
 
   async function runOtaOnSelected() {
@@ -745,7 +755,7 @@
       }
     }
 
-    setProgressDone('OTA finished. Caps are rebooting.');
+    setProgressDone('OTA finished. Caps reconnected and ready.');
     lockUI(false);
   }
 
@@ -1043,33 +1053,58 @@
   }
 
   async function fetchLatestRelease() {
-    fwCardState('loading', 'Fetching firmware…', '');
+    fwCardState('loading', 'Checking for latest release…', '');
     el.btnRefetch.disabled = true;
 
     try {
-      // raw.githubusercontent.com serves files directly from the repo with
-      // correct CORS headers — no redirect to S3, no CORS issues.
-      const url = `https://raw.githubusercontent.com/${GITHUB_IMG_PATH}`;
-      const filename = GITHUB_IMG_PATH.split('/').pop();
+      // Step 1: hit the Releases API to find the latest release and asset URL.
+      // This call has no CORS issues — api.github.com sends correct headers.
+      const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/releases/latest`;
+      const apiRes = await fetch(apiUrl, { headers: { Accept: 'application/vnd.github+json' } });
 
-      fwCardState('loading', `Downloading ${filename}…`, url);
-
-      const res = await fetch(url);
-      if (!res.ok) {
+      if (!apiRes.ok) {
         fwCardState('error',
-          res.status === 404 ? `File not found: ${filename}` : `Download failed (HTTP ${res.status})`,
-          url
+          apiRes.status === 404 ? 'No releases found in this repo yet.' : `GitHub API error ${apiRes.status}`,
+          apiUrl
         );
         return;
       }
 
-      const buf = await res.arrayBuffer();
+      const release = await apiRes.json();
+      const tag = release.tag_name || release.name || '(unnamed)';
+      const assets = release.assets || [];
+      const asset = GITHUB_ASSET
+        ? assets.find(a => a.name === GITHUB_ASSET)
+        : assets.find(a => a.name.endsWith('.img'));
+
+      if (!asset) {
+        fwCardState('error',
+          `No .img found in release ${tag}`,
+          `Assets: ${assets.map(a => a.name).join(', ') || 'none'}`
+        );
+        return;
+      }
+
+      fetchedAssetName = asset.name;
+      fwCardState('loading', `Downloading ${asset.name} (${tag})…`,
+        `${(asset.size / 1024).toFixed(1)} KB`);
+
+      // Step 2: download the binary via corsproxy.io, which adds
+      // Access-Control-Allow-Origin headers to the GitHub S3 redirect.
+      // corsproxy.io is a free, open-source CORS proxy — if it ever goes
+      // away, replace with any other CORS proxy or commit the file to the
+      // repo and use raw.githubusercontent.com instead.
+      const proxyUrl = `https://corsproxy.io/?url=${encodeURIComponent(asset.browser_download_url)}`;
+      const dlRes = await fetch(proxyUrl);
+
+      if (!dlRes.ok) throw new Error(`Download failed: HTTP ${dlRes.status}`);
+
+      const buf = await dlRes.arrayBuffer();
       otaImageBytes = new Uint8Array(buf);
-      fetchedAssetName = filename;
 
       fwCardState('good',
-        `${filename}  (${(otaImageBytes.length / 1024).toFixed(1)} KB)`,
-        `Fetched ${new Date().toLocaleTimeString()}`
+        `${asset.name}  (${(otaImageBytes.length / 1024).toFixed(1)} KB)`,
+        `Release ${tag} · fetched ${new Date().toLocaleTimeString()}`
       );
       updateControls();
 
