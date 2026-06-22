@@ -859,18 +859,20 @@
 
   async function findCap() {
     try {
-      // The firmware puts the device name in the primary advertisement (ad[])
-      // but the NUS service UUID in the scan response (sd[]). Web Bluetooth
-      // needs to request scan responses to see the UUID, which happens when
-      // you list the service in `filters` rather than only in `optionalServices`.
-      // Using both a namePrefix filter AND the service filter together means
-      // the browser will only show CSE_Marine_* devices that expose NUS.
+      // Filter on the NUS service UUID only — this is what forces Chrome to
+      // scan for scan-response packets where the BC805M advertises the UUID.
+      // A namePrefix filter alone doesn't trigger scan-response scanning and
+      // shows nothing. We verify the CSE_Marine_ prefix ourselves after the
+      // picker returns.
       const device = await navigator.bluetooth.requestDevice({
-        filters: [
-          { namePrefix: 'CSE_Marine_', services: [NUS_SERVICE] },
-        ],
+        filters: [{ services: [NUS_SERVICE] }],
         optionalServices: [NUS_SERVICE],
       });
+      // Reject non-CSE devices (shouldn't appear, but just in case)
+      if (device.name && !device.name.startsWith('CSE_Marine_')) {
+        console.warn('Ignoring non-CSE device:', device.name);
+        return;
+      }
       if (caps.has(device.id)) return;
       const cap = { id: device.id, name: device.name || '(unnamed)', device, rxChar: null, txChar: null, pending: null, selected: true, currentLevel: null, status: 'connecting…', statusTone: 'working' };
       caps.set(device.id, cap);
