@@ -719,14 +719,78 @@
       renderCapList();
     });
 
-    // Cap is rebooting into new firmware — disconnect cleanly and show status.
+    // Cap is rebooting into new firmware.
     cap.rxChar = null;
     cap.txChar = null;
     try { cap.device.gatt.disconnect(); } catch(e) {}
-    cap.status = 'OTA complete — disconnected'; cap.statusTone = 'warn';
+    cap.status = 'OTA complete — reconnecting…'; cap.statusTone = 'working';
     renderCapList();
-    olLog(`[${name}] Done. Cap is rebooting into new firmware.`, 'lg');
-    olLog(`[${name}] Tap "+ Find caps" to reconnect.`, 'lm');
+    olLog(`[${name}] Flash done. Waiting for cap to reboot…`, 'lm');
+
+    // ── 4. Reconnect ──
+    // The BC805M calls bt_le_adv_start() on_disconnected so it re-advertises
+    // after the reboot. Retry gatt.connect() — no picker needed since the
+    // browser already has the device paired.
+    await reconnectAndReprogram(cap);
+  }
+
+  async function reconnectAndReprogram(cap, maxWaitMs = 30000, retryIntervalMs = 2000) {
+    const name = cap.name;
+    const deadline = Date.now() + maxWaitMs;
+    let attempt = 0;
+
+    // ── Step 1: reconnect ──
+    while (Date.now() < deadline) {
+      attempt++;
+      cap.status = `reconnecting… (${attempt})`; cap.statusTone = 'working';
+      renderCapList();
+      try {
+        const server  = await cap.device.gatt.connect();
+        const service = await server.getPrimaryService(NUS_SERVICE);
+        cap.rxChar    = await service.getCharacteristic(NUS_RX_CHAR);
+        cap.txChar    = await service.getCharacteristic(NUS_TX_CHAR);
+        await cap.txChar.startNotifications();
+        cap.txChar.addEventListener('characteristicvaluechanged', (e) => onNotify(cap, e));
+        olLog(`[${name}] Reconnected.`, 'lg');
+        break;
+      } catch (err) {
+        olLog(`[${name}] Reconnect attempt ${attempt}… (${err.message})`, 'lm');
+        await new Promise(r => setTimeout(r, retryIntervalMs));
+      }
+      if (Date.now() >= deadline) {
+        cap.status = 'reconnect timed out'; cap.statusTone = 'danger';
+        renderCapList();
+        olLog(`[${name}] Could not reconnect after ${maxWaitMs/1000}s.`, 'le');
+        return;
+      }
+    }
+
+    // ── Step 2: re-program the pressure mode on the new firmware ──
+    if (selectedLevel === null) {
+      cap.status = 'connected (OTA done)'; cap.statusTone = 'good';
+      renderCapList();
+      olLog(`[${name}] No mode selected — skipping re-program.`, 'lm');
+      return;
+    }
+
+    const m = MODE_LABELS[selectedLevel];
+    cap.status = `re-programming ${m.name}…`; cap.statusTone = 'working';
+    renderCapList();
+    olLog(`[${name}] Re-programming ${m.name} on new firmware…`);
+
+    const ack = await sendAndWait(cap, encodeLevel(selectedLevel), 4000);
+    if (ack && ack[0] === 0x50) {
+      cap.currentLevel = selectedLevel;
+      cap.status = `${m.name} (${m.psi} PSI) — OTA done`; cap.statusTone = 'good';
+      olLog(`[${name}] ${m.name} programmed OK.`, 'lg');
+    } else if (ack && ack[0] === 0x45) {
+      cap.status = 'mode rejected after OTA'; cap.statusTone = 'warn';
+      olLog(`[${name}] Mode rejected by new firmware.`, 'lw');
+    } else {
+      cap.status = 'no reply to mode after OTA'; cap.statusTone = 'warn';
+      olLog(`[${name}] No reply to mode command.`, 'lw');
+    }
+    renderCapList();
   }
 
   async function runOtaOnSelected() {
@@ -749,7 +813,7 @@
       }
     }
 
-    setProgressDone('OTA finished. Caps reconnected and ready.');
+    setProgressDone('OTA done. Caps reconnected and pressure mode re-programmed.');
     lockUI(false);
   }
 
