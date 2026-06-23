@@ -528,7 +528,14 @@ async function fetchFirmware(){
     updateOtaControls();
   }catch(err){fwState('error','Firmware fetch failed',err.message);}
 }
-oe.fwRefetch.addEventListener('click',fetchFirmware);
+oe.fwRefetch.addEventListener('click', () => {
+  // Reset local file state so it's clear the URL version is being fetched
+  oe.dropzone.classList.remove('has-file');
+  oe.dropIcon.textContent = '📦';
+  oe.dropTitle.textContent = 'Drop .img here or tap to choose';
+  oe.fileInput.value = '';
+  fetchFirmware();
+});
 
 function handleLocalFile(file){
   if(!file)return;
