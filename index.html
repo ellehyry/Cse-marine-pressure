@@ -594,8 +594,8 @@ async function runMdfu(cap, imageBytes){
     oLog('MDFU: END_TRANSFER…');
     await sendCmd(MDFU.CMD.END_TRANSFER,new Uint8Array(),false,10000);
     oProgress(100,'Flash complete!','good');
-    oLog('Done! Cap rebooting into new firmware.','lg');
-    oLog('Switch to Pressure Mode tab to reconnect and set the mode.','lm');
+    oLog('Done! Cap is rebooting into new firmware.','lg');
+    oLog('Tap "+ Find caps" in either tab to reconnect, then set the pressure mode.','lm');
   }finally{
     cap.tx.removeEventListener('characteristicvaluechanged',nh);
   }
@@ -621,9 +621,9 @@ async function doFlash(){
     await new Promise(r=>setTimeout(r,1500));
     cap.status='OTA: flashing…'; cap.tone='working'; renderCaps();
     await runMdfu(cap,otaImageBytes);
-    cap.rx=null; cap.tx=null;
-    try{cap.device.gatt.disconnect();}catch(e){}
-    cap.status='OTA complete — rebooting'; cap.tone='good'; renderCaps();
+    // Remove the cap from the list — it's rebooting into new firmware
+    // and will need to be re-paired anyway. Clean slate.
+    await removeCap(cap.id);
   }catch(err){
     oLog(`OTA FAILED: ${err.message}`,'le');
     oProgress(0,'OTA failed','error');
